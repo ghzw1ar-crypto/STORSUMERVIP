@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sumer Rest — نظام المخزن</title>
+<style>
+:root{--bg:#06111a;--card:#0d1b26;--card2:#101f2b;--line:#213444;--text:#f4f7fb;--muted:#9fb0bf;--green:#22c55e;--blue:#2d8cff;--orange:#f59e0b;--red:#ef4444}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#06111a,#08131d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Tahoma,Arial,sans-serif}button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:86px}.top{padding:18px 16px 10px;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:800;font-size:21px}.sub{font-size:12px;color:var(--muted);margin-top:3px}.bell{width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:#fff;position:relative}.badge{position:absolute;top:-3px;left:-3px;background:var(--red);width:19px;height:19px;border-radius:50%;font-size:11px;display:grid;place-items:center}.screen{padding:8px 14px}.hero{background:linear-gradient(135deg,#102b3d,#0d1824);border:1px solid #294355;border-radius:24px;padding:20px;margin-bottom:14px}.hero h1{margin:0 0 6px;font-size:23px}.hero p{margin:0;color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;min-height:105px}.icon{font-size:25px}.tile b{display:block;margin-top:10px}.tile small{color:var(--muted)}.section{margin:18px 0 9px;font-weight:800}.alert{background:var(--card);border:1px solid var(--line);border-right:4px solid var(--orange);border-radius:14px;padding:12px;margin:8px 0;display:flex;justify-content:space-between}.alert.red{border-right-color:var(--red)}.alert small{color:var(--muted)}.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:76px;background:rgba(5,15,23,.96);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;z-index:10}.nav{color:var(--muted);font-size:11px;text-align:center}.nav span{display:block;font-size:22px;margin-bottom:3px}.nav.active{color:var(--green)}.back{background:transparent;color:#fff;font-size:25px}.title{text-align:center;font-weight:800;font-size:18px;flex:1}.bar{display:flex;align-items:center;gap:10px;margin-bottom:12px}.scanner{background:#02090f;border:1px solid #284052;border-radius:24px;padding:16px;text-align:center}.camera{height:270px;border:2px solid var(--green);border-radius:20px;display:grid;place-items:center;position:relative;overflow:hidden;background:radial-gradient(circle,#162b38,#02080c)}video{width:100%;height:100%;object-fit:cover;display:none}.frame{width:78%;height:100px;border:2px solid #38d66d;border-radius:16px;box-shadow:0 0 0 999px rgba(0,0,0,.24)}.hint{margin:14px 0;color:var(--muted);font-size:13px}.scanbtn,.primary{width:100%;background:var(--green);color:#04100a;padding:15px;border-radius:14px;font-weight:900}.secondary{width:100%;background:var(--card2);color:#fff;border:1px solid var(--line);padding:13px;border-radius:14px;margin-top:9px}.error{color:#ff7474;font-size:12px;margin-top:10px}.item{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:12px}.ok{color:#43dc74;font-weight:800}.qty{display:flex;align-items:center;justify-content:space-between;background:#09151f;border:1px solid var(--line);border-radius:14px;padding:8px;margin:12px 0}.qty button{width:44px;height:44px;border-radius:12px;background:#182b39;color:#fff;font-size:24px}.qty strong{font-size:23px}.field{margin:12px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.field input,.field select,.field textarea{width:100%;background:#09151f;color:#fff;border:1px solid var(--line);border-radius:12px;padding:13px;outline:none}.success{background:#0b2a18;border:1px solid #1f8a49;border-radius:18px;padding:20px;text-align:center}.check{font-size:48px}.stat{display:flex;justify-content:space-between;margin-top:10px}.hidden{display:none!important}.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:#0e2317;border:1px solid #23864a;padding:12px 18px;border-radius:14px;z-index:30;display:none}.logo{font-size:18px;color:#fbbf24;margin-left:7px}
+</style>
+</head>
+<body>
+<div id="toast" class="toast">تم تسجيل العملية بنجاح</div>
+<div class="app">
+<header class="top"><div><div class="brand"><span class="logo">♛</span> SUMER REST</div><div class="sub">نظام إدارة المخزن</div></div><button class="bell" onclick="showDashboard()">🔔<span class="badge">3</span></button></header>
+
+<div id="connectionPanel" class="item" style="margin:8px 14px 0;border-color:#2d8cff">
+  <div class="ok" style="color:#2d8cff">🔗 ربط قاعدة البيانات</div>
+  <p class="hint" style="margin-bottom:8px">هذه النسخة تحافظ على تصميم V1 وتربط المخزون مع Supabase.</p>
+  <div class="field">
+    <label>Supabase URL</label>
+    <input id="supabaseUrl" placeholder="https://xxxx.supabase.co" inputmode="url">
+  </div>
+  <div class="field">
+    <label>Publishable key</label>
+    <input id="supabaseKey" placeholder="sb_publishable_..." autocomplete="off">
+  </div>
+  <button class="primary" onclick="connectSupabase()">✓ اختبار الاتصال</button>
+  <div id="connectionStatus" class="error"></div>
+</div>
+
+<main id="dashboard" class="screen">
+<section class="hero"><h1>مرحباً، أمين المخزن 👋</h1><p>كل حركة تدخل أو خروج محفوظة باسم الموظف والوقت والصنف.</p></section>
+<div class="grid"><button class="tile" onclick="showIssue()"><div class="icon">📤</div><b>صرف من المخزن</b><small>صرف بالباركود فقط</small></button><button class="tile" onclick="showReceive()"><div class="icon">📥</div><b>دخول المخزن</b><small>إضافة بضاعة + السعر</small></button><button class="tile"><div class="icon">📦</div><b>جرد المخزون</b><small>مطابقة الكميات</small></button><button class="tile"><div class="icon">📊</div><b>تقارير المخزن</b><small>حركة ومخزون</small></button></div>
+<div class="section">تنبيهات المخزون</div>
+<div class="alert red"><div><b>زيت طبخ</b><br><small>المتبقي 3 كراتين</small></div><strong>⚠️</strong></div>
+<div class="alert"><div><b>سكر</b><br><small>المتبقي 8 كراتين</small></div><strong>⚠️</strong></div>
+<div class="alert"><div><b>دجاج مجمد</b><br><small>المتبقي 5 كراتين</small></div><strong>⚠️</strong></div>
+</main>
+<main id="issue" class="screen hidden">
+<div class="bar"><button class="back" onclick="showDashboard()">‹</button><div class="title">صرف من المخزن</div><span>📋</span></div>
+<div id="scanView" class="scanner"><h2>امسح الباركود</h2><p class="hint">وجه كاميرا الجهاز على باركود الصنف</p><div class="camera"><video id="video" playsinline></video><div class="frame"></div></div><p id="scanStatus" class="hint">🔒 لا يمكن إضافة صنف بدون مسح الباركود</p><button class="scanbtn" onclick="startScanner()">📷 تشغيل الكاميرا ومسح الباركود</button><button class="secondary" onclick="demoScan()">تجربة مسح 1234567890123</button><div id="scanError" class="error"></div></div>
+<div id="itemView" class="hidden">
+<div class="item"><div class="ok">✓ تم التعرف على الصنف</div><h2 id="itemName" style="margin-bottom:4px">—</h2><small style="color:var(--muted)" id="itemBarcode">—</small><div class="stat"><span>المتوفر حالياً</span><b id="itemAvailable" style="color:var(--green);font-size:22px">—</b></div><div class="stat"><span>سعر الوحدة</span><b id="itemPrice" style="color:#fbbf24">—</b></div></div>
+<div class="item"><b>الكمية المطلوب صرفها</b><div class="qty"><button onclick="changeQty(-1)">−</button><strong id="qty">5</strong><button onclick="changeQty(1)">+</button></div><div class="stat"><span>المتبقي بعد الصرف</span><b id="remaining" style="color:var(--green)">—</b></div></div>
+<div class="item"><div class="field"><label>المستلم</label><input id="receiver" placeholder="اسم الشخص / القسم" value="المطبخ الرئيسي"></div><div class="field"><label>سبب الصرف</label><select id="reason"><option>استخدام يومي</option><option>طلب قسم</option><option>تالف</option><option>أخرى</option></select></div><div class="field"><label>ملاحظات</label><textarea id="notes" rows="2" placeholder="اختياري"></textarea></div><button class="primary" onclick="confirmIssue()">✓ تأكيد الصرف</button><button class="secondary" onclick="resetIssue()">إلغاء</button></div>
+</div>
+<div id="successView" class="hidden success"><div class="check">✓</div><h2>تم صرف الصنف بنجاح</h2><div class="item" style="text-align:right"><b id="doneName">—</b><div class="stat"><span>الكمية المصروفة</span><b id="doneQty" style="color:#ff6666">—</b></div><div class="stat"><span>قيمة الصرف</span><b id="doneTotal" style="color:#fbbf24">—</b></div><div class="stat"><span>المتبقي</span><b id="doneRemaining" style="color:var(--green)">—</b></div><div class="stat"><span>المستلم</span><b id="doneReceiver">—</b></div><div class="stat"><span>الوقت</span><b id="doneTime"></b></div></div><button class="primary" style="margin-top:12px" onclick="resetIssue()">+ صرف صنف آخر</button></div>
+</main>
+
+<main id="receive" class="screen hidden">
+  <div class="bar"><button class="back" onclick="showDashboard()">‹</button><div class="title">دخول المخزن</div><span>📥</span></div>
+
+  <div class="item">
+    <div class="step"><i>1</i> بيانات الصنف</div>
+
+    <div class="field">
+      <label>اسم الصنف *</label>
+      <input id="receiveName" placeholder="مثلاً: زيت طبخ">
+    </div>
+
+    <div class="field">
+      <label>الباركود *</label>
+      <input id="receiveBarcode" placeholder="سيتم توليد الباركود تلقائياً" inputmode="numeric" maxlength="13" readonly>
+      <button class="secondary" type="button" onclick="generateReceiveBarcode()">🔄 توليد باركود جديد</button>
+      <small style="display:block;color:var(--muted);margin-top:7px">سيتم إنشاء باركود EAN-13 تلقائياً للصنف الجديد.</small>
+    </div>
+
+    <div class="field">
+      <label>الوحدة *</label>
+      <select id="receiveUnit">
+        <option>حبة</option>
+        <option>كرتون</option>
+        <option>كيلو</option>
+        <option>كيس</option>
+        <option>علبة</option>
+        <option>لتر</option>
+        <option>صندوق</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>الفئة</label>
+      <input id="receiveCategory" placeholder="مثلاً: مواد غذائية">
+    </div>
+
+    <div class="field">
+      <label>الكمية الواردة *</label>
+      <input id="receiveQty" type="number" min="0.01" step="0.01" placeholder="20" inputmode="decimal">
+    </div>
+
+    <div class="field">
+      <label>سعر الوحدة بالدينار العراقي *</label>
+      <input id="receivePrice" type="number" min="0" step="1" placeholder="25000" inputmode="numeric">
+    </div>
+
+    <div class="field">
+      <label>الحد الأدنى للمخزون</label>
+      <input id="receiveMin" type="number" min="0" step="0.01" value="0" inputmode="decimal">
+    </div>
+
+    <div class="field">
+      <label>ملاحظات</label>
+      <textarea id="receiveNote" rows="2" placeholder="اختياري"></textarea>
+    </div>
+
+    <button class="primary" onclick="saveReceipt()">✓ حفظ ودخول للمخزن</button>
+    <div id="receiveStatus" class="error"></div>
+  </div>
+
+  <div id="receiveSuccess" class="hidden success">
+    <div class="check">✓</div>
+    <h2>تم إدخال البضاعة بنجاح</h2>
+    <div class="item" style="text-align:right">
+      <b id="receivedSummary">—</b>
+      <div class="stat"><span>الكمية المضافة</span><b id="receivedQty" style="color:var(--green)">—</b></div>
+      <div class="stat"><span>سعر الوحدة</span><b id="receivedPrice" style="color:#fbbf24">—</b></div>
+      <div class="stat"><span>قيمة البضاعة</span><b id="receivedTotal">—</b></div>
+    </div>
+    <button class="primary" style="margin-top:12px" onclick="resetReceive()">+ إدخال بضاعة أخرى</button>
+  </div>
+</main>
+
+<nav class="bottom"><div class="nav active" onclick="showDashboard()"><span>⌂</span>الرئيسية</div><div class="nav"><span>▣</span>المخازن</div><div class="nav" onclick="showIssue()"><span>▤</span>صرف</div><div class="nav"><span>⚙</span>الإعدادات</div></nav>
+</div>
+
+<script>
+let qty=1,stream=null,detector=null,product=null,stockRow=null,busy=false;
+let supabaseUrl=localStorage.getItem('sumer_supabase_url')||'';
+let supabaseKey=localStorage.getItem('sumer_supabase_key')||'';
+
+const $=id=>document.getElementById(id);
+// Supabase REST يحتاج المفتاح في apikey و Authorization معاً.
+// هذا مهم خصوصاً مع Publishable Keys الجديدة.
+const headers=()=>({
+  'apikey':supabaseKey,
+  'Authorization':'Bearer '+supabaseKey,
+  'Accept':'application/json'
+});
+
+function setConnectionStatus(text,ok=false){
+  $('connectionStatus').innerHTML=ok?'<span style="color:var(--green)">'+text+'</span>':'<span style="color:#ff7474">'+text+'</span>';
+}
+
+async function connectSupabase(){
+  supabaseUrl=$('supabaseUrl').value.trim().replace(/\/$/,'');
+  supabaseKey=$('supabaseKey').value.trim();
+  if(!supabaseUrl||!supabaseKey){setConnectionStatus('أدخل الرابط والمفتاح.');return}
+  setConnectionStatus('جاري اختبار الاتصال…');
+  try{
+    if(!/^https:\/\/[^\s]+\.supabase\.co$/i.test(supabaseUrl)){
+      throw new Error('URL غير صحيح');
+    }
+    if(!/^sb_publishable_[A-Za-z0-9._-]+$/.test(supabaseKey)){
+      throw new Error('المفتاح ليس Publishable key صحيح');
+    }
+
+    const r=await fetch(
+      supabaseUrl+'/rest/v1/products?select=id&limit=1',
+      {method:'GET',headers:headers()}
+    );
+
+    const body=await r.text();
+    if(!r.ok){
+      let msg=body;
+      try{
+        const j=JSON.parse(body);
+        msg=j.message||j.error_description||j.hint||j.error||body;
+      }catch(_){}
+      throw new Error('HTTP '+r.status+': '+msg);
+    }
+
+    localStorage.setItem('sumer_supabase_url',supabaseUrl);
+    localStorage.setItem('sumer_supabase_key',supabaseKey);
+    setConnectionStatus('✓ تم الاتصال بقاعدة البيانات بنجاح',true);
+    $('connectionPanel').style.display='none';
+  }catch(e){
+    console.error(e);
+    setConnectionStatus('فشل الاتصال: '+(e.message||'خطأ غير معروف'));
+  }
+}
+
+function loadConfig(){
+  if(supabaseUrl){
+    $('supabaseUrl').value=supabaseUrl;
+    $('supabaseKey').value=supabaseKey;
+    if(supabaseKey) connectSupabase();
+  }
+}
+
+function showDashboard(){
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('issue').classList.add('hidden');
+  document.getElementById('receive').classList.add('hidden');
+  stopScanner();
+}
+
+function showReceive(){
+  if(!supabaseKey){alert('اربط قاعدة البيانات أولاً من أعلى الصفحة.');return}
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('issue').classList.add('hidden');
+  document.getElementById('receive').classList.remove('hidden');
+  document.getElementById('receiveSuccess').classList.add('hidden');
+  document.querySelector('#receive .item').classList.remove('hidden');
+  document.getElementById('receiveStatus').textContent='';
+  generateReceiveBarcode();
+}
+
+function resetReceive(){
+  ['receiveName','receiveBarcode','receiveCategory','receiveQty','receivePrice','receiveNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('receiveMin').value='0';
+  document.getElementById('receiveUnit').value='حبة';
+  document.getElementById('receiveStatus').textContent='';
+  document.getElementById('receiveSuccess').classList.add('hidden');
+  document.querySelector('#receive .item').classList.remove('hidden');
+  generateReceiveBarcode();
+}
+
+function generateEAN13(){
+  // أول 12 رقم، ثم نحسب رقم التحقق الخاص بـ EAN-13.
+  const prefix = '200';
+  let digits = prefix;
+  while(digits.length < 12){
+    digits += Math.floor(Math.random()*10);
+  }
+
+  let sum = 0;
+  for(let i=0;i<12;i++){
+    const n = Number(digits[i]);
+    sum += (i % 2 === 0) ? n : n * 3;
+  }
+  const check = (10 - (sum % 10)) % 10;
+  return digits + check;
+}
+
+function generateReceiveBarcode(){
+  const input = document.getElementById('receiveBarcode');
+  if(!input) return;
+  input.value = generateEAN13();
+  document.getElementById('receiveStatus').textContent = '';
+}
+
+async function saveReceipt(){
+  const name=document.getElementById('receiveName').value.trim();
+  const barcode=document.getElementById('receiveBarcode').value.trim();
+  const unit=document.getElementById('receiveUnit').value;
+  const category=document.getElementById('receiveCategory').value.trim()||null;
+  const quantity=Number(document.getElementById('receiveQty').value);
+  const price=Number(document.getElementById('receivePrice').value);
+  const minStock=Number(document.getElementById('receiveMin').value||0);
+  const note=document.getElementById('receiveNote').value.trim()||null;
+  const status=document.getElementById('receiveStatus');
+
+  if(!name||!/^[0-9]{13}$/.test(barcode)||!quantity||quantity<=0||price<0){
+    status.textContent='أكمل البيانات وتأكد أن الباركود مكوّن من 13 رقم.';
+    return;
+  }
+
+  status.textContent='جاري حفظ البضاعة…';
+
+  try{
+    const existingRes=await fetch(
+      supabaseUrl+'/rest/v1/products?select=id,name,barcode,unit,active,unit_price&barcode=eq.'+encodeURIComponent(barcode)+'&limit=1',
+      {headers:headers()}
+    );
+    const existing=await existingRes.json();
+    if(!existingRes.ok) throw new Error('تعذر البحث عن الصنف');
+
+    let prod;
+    if(existing.length){
+      const upd=await fetch(
+        supabaseUrl+'/rest/v1/products?id=eq.'+existing[0].id,
+        {
+          method:'PATCH',
+          headers:{...headers(),'Content-Type':'application/json','Prefer':'return=representation'},
+          body:JSON.stringify({
+            name,unit,category,min_stock:minStock,unit_price:price,active:true
+          })
+        }
+      );
+      const updText=await upd.text();
+      let updData;
+      try{ updData=JSON.parse(updText); }catch(_){ updData=updText; }
+
+      if(!upd.ok){
+        const detail =
+          typeof updData === 'string'
+            ? updData
+            : (updData.message || updData.error_description || updData.hint || updData.error || JSON.stringify(updData));
+        throw new Error('تحديث الصنف فشل — HTTP '+upd.status+': '+detail);
+      }
+
+      const rows = Array.isArray(updData) ? updData : [updData];
+      if(!rows.length || !rows[0]){
+        throw new Error('تم تحديث الصنف لكن Supabase لم يُرجع بيانات الصنف.');
+      }
+
+      prod=rows[0];
+    }else{
+      const ins=await fetch(
+        supabaseUrl+'/rest/v1/products',
+        {
+          method:'POST',
+          headers:{...headers(),'Content-Type':'application/json','Prefer':'return=representation'},
+          body:JSON.stringify({
+            name,barcode,unit,category,min_stock:minStock,unit_price:price,active:true
+          })
+        }
+      );
+      const insText=await ins.text();
+      let insData;
+      try{ insData=JSON.parse(insText); }catch(_){ insData=insText; }
+
+      if(!ins.ok){
+        const detail =
+          typeof insData === 'string'
+            ? insData
+            : (insData.message || insData.error_description || insData.hint || insData.error || JSON.stringify(insData));
+        throw new Error('إنشاء الصنف فشل — HTTP '+ins.status+': '+detail);
+      }
+
+      const rows = Array.isArray(insData) ? insData : [insData];
+      if(!rows.length || !rows[0]){
+        throw new Error('تم إرسال الصنف لكن Supabase لم يُرجع بيانات الصنف.');
+      }
+
+      prod=rows[0];
+    }
+
+    const w=await fetch(
+      supabaseUrl+'/rest/v1/warehouses?select=id,name&limit=10',
+      {headers:headers()}
+    );
+    const warehouses=await w.json();
+    if(!w.ok) throw new Error('تعذر قراءة المخازن: HTTP '+w.status+' '+JSON.stringify(warehouses));
+    if(!warehouses.length) throw new Error('لا يوجد أي مخزن في قاعدة البيانات');
+    const warehouse =
+      warehouses.find(x => String(x.name||'').trim() === 'مخزن Sumer Rest') ||
+      warehouses.find(x => /sumer/i.test(String(x.name||''))) ||
+      warehouses[0];
+
+    const receipt=await fetch(
+      supabaseUrl+'/rest/v1/rpc/receive_stock',
+      {
+        method:'POST',
+        headers:{...headers(),'Content-Type':'application/json'},
+        body:JSON.stringify({
+          p_warehouse_id:warehouse.id,
+          p_product_id:prod.id,
+          p_quantity:quantity,
+          p_note:note
+        })
+      }
+    );
+    const receivedText=await receipt.text();
+    let received;
+    try{ received=JSON.parse(receivedText); }catch(_){ received=receivedText; }
+    if(!receipt.ok){
+      throw new Error('receive_stock HTTP '+receipt.status+': '+(
+        typeof received==='string' ? received : JSON.stringify(received)
+      ));
+    }
+
+    document.querySelector('#receive .item').classList.add('hidden');
+    document.getElementById('receiveSuccess').classList.remove('hidden');
+    document.getElementById('receivedSummary').textContent=name+' — '+barcode+' — '+warehouse.name;
+    document.getElementById('receivedQty').textContent=quantity+' '+unit;
+    document.getElementById('receivedPrice').textContent=price.toLocaleString('ar-IQ')+' د.ع';
+    document.getElementById('receivedTotal').textContent=(quantity*price).toLocaleString('ar-IQ')+' د.ع';
+    status.textContent='';
+  }catch(e){
+    console.error('saveReceipt error:', e);
+    const msg = e && e.message ? e.message : String(e);
+    status.innerHTML =
+      '❌ فشل حفظ البضاعة.<br><small style="color:#ff9b9b;word-break:break-word">' +
+      msg.replace(/</g,'&lt;').replace(/>/g,'&gt;') +
+      '</small>';
+  }
+}
+
+function showIssue(){
+  if(!supabaseKey){alert('اربط قاعدة البيانات أولاً من أعلى الصفحة.');return}
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('issue').classList.remove('hidden');
+  resetIssue();
+}
+function demoScan(){
+  stopScanner();
+  lookupBarcode('1234567890123');
+}
+function changeQty(n){
+  const max=Number(stockRow?.quantity||0);
+  qty=Math.max(1,Math.min(max,qty+n));
+  renderQty();
+}
+function renderQty(){
+  document.getElementById('qty').textContent=qty;
+  const remaining=Math.max(0,Number(stockRow?.quantity||0)-qty);
+  document.getElementById('remaining').textContent=remaining+' '+(product?.unit||'وحدة');
+}
+
+async function startScanner(){
+  const err=document.getElementById('scanError');err.textContent='';
+  if(!supabaseKey){err.textContent='اربط قاعدة البيانات أولاً.';return}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+    const video=document.getElementById('video');
+    video.srcObject=stream;video.style.display='block';await video.play();
+    if('BarcodeDetector' in window){
+      detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','itf','qr_code']});
+      const loop=async()=>{
+        if(!stream)return;
+        try{
+          const codes=await detector.detect(video);
+          if(codes.length){busy=true;await lookupBarcode(codes[0].rawValue);return}
+        }catch(e){}
+        requestAnimationFrame(loop);
+      };
+      loop();
+    }else{
+      err.textContent='المتصفح لا يدعم قارئ الباركود الأصلي. نضيف مكتبة قارئ في الخطوة التالية.';
+    }
+  }catch(e){
+    err.textContent='تعذر تشغيل الكاميرا. اسمح للمتصفح باستخدام الكاميرا.';
+  }
+}
+
+function stopScanner(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  const v=document.getElementById('video');
+  if(v){v.srcObject=null;v.style.display='none'}
+  busy=false;
+}
+
+async function lookupBarcode(code){
+  const err=document.getElementById('scanError');
+  err.textContent='جاري البحث في المخزن…';
+  try{
+    const r=await fetch(supabaseUrl+'/rest/v1/products?select=id,name,barcode,unit,active,unit_price&barcode=eq.'+encodeURIComponent(code)+'&active=eq.true&limit=1',{headers:headers()});
+    const products=await r.json();
+    if(!r.ok||!products.length)throw new Error('NOT_FOUND');
+    product=products[0];
+
+    const w=await fetch(supabaseUrl+'/rest/v1/warehouses?select=id,name&name=eq.'+encodeURIComponent('مخزن Sumer Rest')+'&limit=1',{headers:headers()});
+    const warehouses=await w.json();
+    if(!w.ok||!warehouses.length)throw new Error('WAREHOUSE');
+
+    const s=await fetch(supabaseUrl+'/rest/v1/stock?select=id,warehouse_id,product_id,quantity&warehouse_id=eq.'+warehouses[0].id+'&product_id=eq.'+product.id+'&limit=1',{headers:headers()});
+    const rows=await s.json();
+    if(!s.ok||!rows.length)throw new Error('NO_STOCK');
+    stockRow=rows[0];
+    qty=Math.min(1,Number(stockRow.quantity));
+
+    $('itemName').textContent=product.name;
+    $('itemBarcode').textContent=product.barcode;
+    $('itemAvailable').textContent=stockRow.quantity+' '+product.unit;
+    $('itemPrice').textContent=Number(product.unit_price||0).toLocaleString('ar-IQ')+' د.ع';
+    $('qty').textContent=qty;
+    renderQty();
+
+    $('scanView').classList.add('hidden');
+    $('itemView').classList.remove('hidden');
+    stopScanner();
+  }catch(e){
+    err.textContent='هذا الباركود غير مسجل أو لا توجد له كمية في المخزن.';
+    busy=false;
+  }
+}
+
+async function confirmIssue(){
+  const receiver=document.getElementById('receiver').value.trim();
+  if(!receiver){alert('اكتب اسم المستلم أو القسم');return}
+  if(!product||!stockRow){alert('امسح الباركود أولاً');return}
+  if(qty<=0||qty>Number(stockRow.quantity)){alert('الكمية غير صحيحة');return}
+
+  try{
+    const r=await fetch(supabaseUrl+'/rest/v1/rpc/issue_stock',{
+      method:'POST',
+      headers:{...headers(),'Content-Type':'application/json'},
+      body:JSON.stringify({
+        p_warehouse_id:stockRow.warehouse_id,
+        p_product_id:product.id,
+        p_quantity:qty,
+        p_received_by_name:receiver,
+        p_reason:document.getElementById('reason').value,
+        p_note:document.getElementById('notes').value.trim()||null
+      })
+    });
+    const data=await r.json();
+    if(!r.ok)throw new Error(JSON.stringify(data));
+
+    const remaining=Number(stockRow.quantity)-qty;
+    stopScanner();
+    $('itemView').classList.add('hidden');
+    $('successView').classList.remove('hidden');
+    $('doneName').textContent=product.name;
+    $('doneQty').textContent=qty+' '+product.unit;
+    $('doneTotal').textContent=(qty*Number(product.unit_price||0)).toLocaleString('ar-IQ')+' د.ع';
+    $('doneRemaining').textContent=remaining+' '+product.unit;
+    $('doneReceiver').textContent=receiver;
+    $('doneTime').textContent=new Date().toLocaleString('ar-IQ',{dateStyle:'short',timeStyle:'short'});
+    $('toast').style.display='block';
+    setTimeout(()=>$('toast').style.display='none',1800);
+  }catch(e){
+    alert('فشل تسجيل الصرف في قاعدة البيانات. تأكد من تشغيل دالة issue_stock في Supabase.');
+  }
+}
+
+function resetIssue(){
+  stopScanner();
+  $('scanView').classList.remove('hidden');
+  $('itemView').classList.add('hidden');
+  $('successView').classList.add('hidden');
+  $('scanError').textContent='';
+  product=null;stockRow=null;qty=1;
+}
+
+loadConfig();
+</script>
+
+</body>
+</html>
