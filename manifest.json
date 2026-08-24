@@ -1,0 +1,32 @@
+{
+  "name": "Sumer Rest — نظام المخزن",
+  "short_name": "Sumer Rest",
+  "description": "نظام إدارة مخزن Sumer Rest",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111315",
+  "theme_color": "#111315",
+  "lang": "ar-IQ",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
