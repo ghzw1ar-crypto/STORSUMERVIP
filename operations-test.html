@@ -5,27 +5,100 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>📋 سجل العمليات — Sumer Rest</title>
 <style>
-:root{--bg:#101214;--panel:#17191d;--line:#2c3037;--text:#f5f5f5;--muted:#9da2aa;--orange:#f28b42;--green:#27c96f;--red:#ff5d5d}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
-main{max-width:620px;margin:auto;padding:16px 14px 90px}.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}.back{color:#fff;text-decoration:none;font-size:30px}.title{font-size:22px;font-weight:900}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin:10px 0}
-.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}.filters input,.filters select{width:100%;background:#111417;color:#fff;border:1px solid var(--line);border-radius:12px;padding:11px}
-button{width:100%;border:0;border-radius:12px;padding:12px;background:var(--orange);font-weight:900;margin-top:9px}.secondary{background:#25292e;color:#fff;border:1px solid var(--line)}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{text-align:center;background:#111417;border:1px solid var(--line);border-radius:13px;padding:10px}.stat b{display:block;font-size:20px}.stat small{color:var(--muted)}
-.item{border:1px solid var(--line);border-radius:15px;padding:12px;margin:8px 0;background:#1a1c20}.head{display:flex;justify-content:space-between;gap:8px}.name{font-weight:900}.type{font-weight:900}.issue{color:var(--red)}.receipt{color:var(--green)}.meta{color:var(--muted);font-size:11px;line-height:1.8;margin-top:7px}.empty{text-align:center;color:var(--muted);padding:28px}
+:root{
+ --bg:#080b10;--panel:#10151d;--panel2:#0c1118;--line:#27313e;
+ --text:#f5f7fa;--muted:#8e99a8;--blue:#2f80ff;--green:#19c978;
+ --red:#ff3f52;--yellow:#ffc94d;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#182333 0,#080b10 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+main{max-width:680px;margin:auto;padding:18px 14px 70px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 2px 18px}
+.back{width:42px;height:42px;display:grid;place-items:center;border:1px solid var(--line);border-radius:14px;background:#0d131b;color:#fff;text-decoration:none;font-size:30px}
+.title-wrap{text-align:center;flex:1}
+.title{font-size:25px;font-weight:950;letter-spacing:-.5px}
+.subtitle{font-size:12px;color:var(--muted);margin-top:3px}
+.refresh{width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:#0d131b;color:#fff;font-size:21px;cursor:pointer}
+.card{background:linear-gradient(180deg,rgba(18,24,32,.98),rgba(11,15,21,.98));border:1px solid var(--line);border-radius:20px;padding:14px;margin:10px 0;box-shadow:0 12px 35px rgba(0,0,0,.18)}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.filters input,.filters select{width:100%;background:#0b1017;color:#fff;border:1px solid #2b3543;border-radius:13px;padding:13px 12px;outline:none;font-size:14px}
+.filters input:focus,.filters select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,128,255,.12)}
+.filter-full{grid-column:1/-1}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+button{width:100%;border:1px solid transparent;border-radius:13px;padding:12px;font-weight:900;margin:0;cursor:pointer;transition:.15s}
+button:active{transform:scale(.98)}
+.primary{background:var(--blue);color:#fff}
+.secondary{background:#202733;color:#fff;border-color:#303b4a}
+.clear{background:#151b24;color:#cbd3de;border-color:#2b3543}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.quick button{background:#0c1118;border-color:#2b3543;color:#dfe6ef;font-size:12px;padding:11px 5px}
+.quick .q-issue{border-color:rgba(255,63,82,.55);color:#ff6574}
+.quick .q-receipt{border-color:rgba(25,201,120,.5);color:#35da91}
+.quick .q-adjust{border-color:rgba(47,128,255,.55);color:#4c95ff}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.stat{text-align:center;background:#0c1118;border:1px solid var(--line);border-radius:15px;padding:11px 5px;min-height:76px;display:flex;flex-direction:column;justify-content:center}
+.stat b{display:block;font-size:21px;line-height:1.2}.stat small{color:var(--muted);font-size:11px;margin-top:4px}
+.stat.issue-stat{border-color:rgba(255,63,82,.45)}.stat.receipt-stat{border-color:rgba(25,201,120,.4)}.stat.adjust-stat{border-color:rgba(47,128,255,.45)}
+.status-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 2px 8px;color:var(--muted);font-size:12px}
+.sort{background:#0c1118;border:1px solid var(--line);color:#fff;border-radius:11px;padding:8px 10px}
+.item{position:relative;overflow:hidden;border:1px solid #293340;border-radius:17px;padding:14px;margin:9px 0;background:linear-gradient(135deg,#111720,#0c1117)}
+.item:before{content:"";position:absolute;right:0;top:0;bottom:0;width:3px;background:#394656}
+.item.issue-item:before{background:var(--red)}.item.receipt-item:before{background:var(--green)}.item.adjust-item:before{background:var(--blue)}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.name{font-weight:950;font-size:17px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:10px;font-size:11px;font-weight:900;border:1px solid}
+.badge.issue{color:#ff6474;border-color:rgba(255,63,82,.5);background:rgba(255,63,82,.08)}
+.badge.receipt{color:#39d98f;border-color:rgba(25,201,120,.45);background:rgba(25,201,120,.07)}
+.badge.adjustment{color:#4e96ff;border-color:rgba(47,128,255,.55);background:rgba(47,128,255,.08)}
+.item-grid{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:11px;align-items:center}
+.qty{font-size:16px;font-weight:950}.qty.issue{color:#ff596b}.qty.receipt,.qty.adjustment{color:#34d98e}
+.details{color:var(--muted);font-size:11px;line-height:1.9}
+.time{font-size:11px;color:#aeb7c3;white-space:nowrap}
+.note{margin-top:7px;padding-top:7px;border-top:1px solid #202833;color:#c8d0da;font-size:11px;line-height:1.7}
+.empty{text-align:center;color:var(--muted);padding:34px 10px}
+.hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7}
+#status{min-height:18px}
+@media(max-width:480px){
+ main{padding:13px 10px 60px}.title{font-size:23px}.filters{grid-template-columns:1fr 1fr}
+ .quick{grid-template-columns:repeat(2,1fr)}.summary{grid-template-columns:repeat(2,1fr)}
+ .item-grid{grid-template-columns:1fr}.time{white-space:normal}
+}
 </style>
 </head>
 <body>
 <main>
-<div class="top"><a class="back" href="index.html">‹</a><div class="title">📋 سجل العمليات</div></div>
+<div class="top">
+<a class="back" href="index.html">‹</a>
+<div class="title-wrap"><div class="title">📋 سجل العمليات</div><div class="subtitle">عرض جميع حركات المخزن</div></div>
+<button class="refresh" onclick="load()" aria-label="تحديث">↻</button>
+</div>
 
 <div class="card">
 <div class="filters">
-<input id="search" placeholder="بحث بالصنف..." oninput="render()">
-<select id="type" onchange="render()"><option value="">كل الحركات</option><option value="issue">📤 صرف</option><option value="receipt">📥 استلام</option></select>
+<input id="search" class="filter-full" placeholder="🔎 بحث بالصنف أو الباركود..." oninput="render()">
+<select id="type" onchange="render()">
+<option value="">كل العمليات</option>
+<option value="issue">📤 صرف</option>
+<option value="receipt">📥 استلام</option>
+<option value="adjustment">⚖️ تسوية جرد</option>
+</select>
+<select id="productFilter" onchange="render()"><option value="">📦 كل الأصناف</option></select>
+<input id="from" type="date" title="من تاريخ" onchange="render()">
+<input id="to" type="date" title="إلى تاريخ" onchange="render()">
 </div>
-<button class="secondary" onclick="load()">↻ تحديث السجل</button>
+<div class="quick">
+<button class="q-all" onclick="setType('')">☷ كل</button>
+<button class="q-issue" onclick="setType('issue')">↥ صرف</button>
+<button class="q-receipt" onclick="setType('receipt')">↧ استلام</button>
+<button class="q-adjust" onclick="setType('adjustment')">⚖ جرد</button>
+</div>
+<div class="actions">
+<button class="primary" onclick="load()">↻ تحديث السجل</button>
+<button class="clear" onclick="clearFilters()">✕ مسح الفلاتر</button>
+</div>
 <div id="status" class="meta"></div>
+<div class="hint">التسوية تظهر بشكل مستقل حتى تفرقها عن الصرف والاستلام العادي.</div>
 </div>
 
 <div id="summary" class="summary"></div>
@@ -34,6 +107,7 @@ button{width:100%;border:0;border-radius:12px;padding:12px;background:var(--oran
 <script>
 let rows=[];
 const $=id=>document.getElementById(id);
+
 function cfg(){
  const url=localStorage.getItem('sumer_supabase_url');
  const key=localStorage.getItem('sumer_supabase_key');
@@ -42,6 +116,30 @@ function cfg(){
 }
 function headers(){const {key}=cfg();return {'apikey':key,'Authorization':'Bearer '+key};}
 function iraqTime(v){try{return new Intl.DateTimeFormat('ar-IQ',{timeZone:'Asia/Baghdad',dateStyle:'medium',timeStyle:'medium'}).format(new Date(v))}catch{return v||'—'}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+
+function isAdjustment(x){
+ const reason=String(x.reason||'').toLowerCase();
+ const note=String(x.note||'').toLowerCase();
+ return reason.includes('تسوية')||reason.includes('جرد')||note.includes('تسوية جرد')||note.includes('الجرد الفعلي');
+}
+function operationType(x){
+ if(isAdjustment(x)) return 'adjustment';
+ const mt=String(x.movement_type||x.type||'').toLowerCase();
+ if(/issue|out|صرف|خروج/.test(mt)) return 'issue';
+ return 'receipt';
+}
+function operationLabel(t){
+ if(t==='adjustment') return '⚖️ تسوية جرد';
+ return t==='issue'?'📤 صرف':'📥 استلام';
+}
+function signedQty(x,t){
+ const q=Math.abs(Number(x.quantity||0));
+ if(t==='issue') return '−'+q;
+ if(t==='receipt') return '+'+q;
+ return (Number(x.quantity||0)<0?'−':'+')+q;
+}
+
 async function load(){
  try{
   $('status').textContent='جاري تحميل سجل العمليات...';
@@ -49,34 +147,89 @@ async function load(){
   const r=await fetch(url+'/rest/v1/stock_movements?select=*&order=created_at.desc&limit=500',{headers:headers()});
   if(!r.ok) throw new Error('تعذر تحميل السجل: HTTP '+r.status);
   rows=await r.json();
-  const p=await fetch(url+'/rest/v1/products?select=id,name,barcode',{headers:headers()});
-  if(p.ok){const products=await p.json(); const map=new Map(products.map(x=>[x.id,x])); rows=rows.map(x=>({...x,product:map.get(x.product_id)}));}
+
+  const p=await fetch(url+'/rest/v1/products?select=id,name,barcode,unit,unit_price',{headers:headers()});
+  if(p.ok){
+   const products=await p.json();
+   const map=new Map(products.map(x=>[x.id,x]));
+   rows=rows.map(x=>({...x,product:map.get(x.product_id)}));
+   const products=[...map.values()].filter(Boolean).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar'));
+   $('productFilter').innerHTML='<option value="">📦 كل الأصناف</option>'+products.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('');
+
+  }
   $('status').textContent='تم تحميل '+rows.length+' عملية';
   render();
- }catch(e){$('status').textContent=e.message||String(e);$('list').innerHTML='<div class="empty">⚠️ '+$('status').textContent+'</div>'}
+ }catch(e){
+  $('status').textContent=e.message||String(e);
+  $('list').innerHTML='<div class="empty">⚠️ '+esc($('status').textContent)+'</div>';
+ }
 }
+
+function clearFilters(){
+ $('search').value='';
+ $('type').value='';
+ $('from').value='';
+ $('to').value='';
+ render();
+}
+
+function setType(t){$('type').value=t;render()}
 function render(){
- const q=$('search').value.trim().toLowerCase(), t=$('type').value;
+ const q=$('search').value.trim().toLowerCase();
+ const t=$('type').value;
+ const pf=$('productFilter').value;
+ const from=$('from').value;
+ const to=$('to').value;
+
  const filtered=rows.filter(x=>{
-  const name=(x.product?.name||'').toLowerCase();
-  const barcode=x.product?.barcode||'';
+  const name=String(x.product?.name||'').toLowerCase();
+  const barcode=String(x.product?.barcode||'');
   const okQ=!q||name.includes(q)||barcode.includes(q);
-  const mt=(x.movement_type||'').toLowerCase();
-  const okT=!t||(t==='issue'&&(mt.includes('issue')||mt.includes('out')||mt.includes('صرف'))||(t==='receipt'&&(mt.includes('receipt')||mt.includes('in')||mt.includes('استلام'))));
-  return okQ&&okT;
+  const ot=operationType(x);
+  const okT=!t||ot===t;
+  const okP=!pf||String(x.product_id)===String(pf);
+  const d=new Date(x.created_at);
+  const day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return okQ&&okT&&okP&&(!from||day>=from)&&(!to||day<=to);
  });
- const issues=filtered.filter(x=>/issue|out|صرف/i.test(x.movement_type||'')).length;
- const receipts=filtered.filter(x=>/receipt|in|استلام/i.test(x.movement_type||'')).length;
- $('summary').innerHTML='<div class="stat"><b>'+filtered.length+'</b><small>كل العمليات</small></div><div class="stat"><b>'+issues+'</b><small>صرف</small></div><div class="stat"><b>'+receipts+'</b><small>استلام</small></div>';
- if(!filtered.length){$('list').innerHTML='<div class="empty">لا توجد عمليات مطابقة.</div>';return}
- $('list').innerHTML=filtered.map(x=>{
-  const issue=/issue|out|صرف/i.test(x.movement_type||'');
+
+ const issues=filtered.filter(x=>operationType(x)==='issue').length;
+ const receipts=filtered.filter(x=>operationType(x)==='receipt').length;
+ const adjustments=filtered.filter(x=>operationType(x)==='adjustment').length;
+
+ $('summary').innerHTML=
+ '<div class="stat"><b>'+filtered.length+'</b><small>إجمالي العمليات</small></div>'+
+ '<div class="stat issue-stat"><b>'+issues+'</b><small>صرف</small></div>'+
+ '<div class="stat receipt-stat"><b>'+receipts+'</b><small>استلام</small></div>'+
+ '<div class="stat adjust-stat"><b>'+adjustments+'</b><small>تسوية جرد</small></div>';
+
+ if(!filtered.length){$('list').innerHTML='<div class="empty">لا توجد عمليات مطابقة للفلاتر.</div>';return}
+
+ $('list').innerHTML=
+ '<div class="status-row"><span>تم العثور على <b>'+filtered.length+'</b> عملية</span><span class="sort">الأحدث أولاً ↓</span></div>'+
+ filtered.map(x=>{
+  const ot=operationType(x);
+  const p=x.product;
   const person=x.received_by_name||x.issued_by||x.received_by||'—';
-  return '<div class="item"><div class="head"><div class="name">'+esc(x.product?.name||'صنف غير معروف')+'</div><div class="type '+(issue?'issue':'receipt')+'">'+(issue?'📤 صرف':'📥 استلام')+'</div></div>'+
-  '<div class="meta">الكمية: <b>'+esc(String(x.quantity??'—'))+'</b> '+esc(x.product?.unit||'')+'<br>السعر: '+esc(String(x.unit_price??'—'))+' د.ع<br>الشخص: '+esc(String(person))+'<br>السبب: '+esc(String(x.reason||'—'))+'<br>الملاحظة: '+esc(String(x.note||'—'))+'<br>الوقت: '+esc(iraqTime(x.created_at))+'</div></div>'
+  const price=x.unit_price_snapshot??x.unit_price??'—';
+  const q=Math.abs(Number(x.quantity||0));
+  const signed=ot==='issue'?'−'+q:ot==='receipt'?'+'+q:(Number(x.quantity||0)<0?'−':' +')+q;
+  const cls=ot==='issue'?'issue-item':ot==='adjustment'?'adjust-item':'receipt-item';
+  const badge=ot==='issue'?'📤 صرف':ot==='receipt'?'📥 استلام':'⚖️ تسوية جرد';
+  const qtyCls=ot==='issue'?'issue':ot==='receipt'?'receipt':'adjustment';
+  return '<div class="item '+cls+'">'+
+   '<div class="item-top"><div><div class="name">'+esc(p?.name||'صنف غير معروف')+'</div>'+
+   '<div class="details">الباركود: '+esc(p?.barcode||'—')+'</div></div>'+
+   '<div class="badge '+(ot==='issue'?'issue':ot==='adjustment'?'adjustment':'receipt')+'">'+badge+'</div></div>'+
+   '<div class="item-grid"><div>'+
+   '<div class="qty '+qtyCls+'">الكمية: '+esc(signed)+' '+esc(p?.unit||'')+'</div>'+
+   '<div class="details">السعر: '+esc(String(price))+' د.ع<br>الشخص: '+esc(String(person))+'<br>السبب: '+esc(String(x.reason||'—'))+'</div>'+
+   (x.note?'<div class="note">📝 '+esc(String(x.note))+'</div>':'')+
+   '</div><div class="time">🕒 '+esc(iraqTime(x.created_at))+'</div></div>'+
+  '</div>';
  }).join('');
 }
-function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+
 load();
 </script>
 </main>
