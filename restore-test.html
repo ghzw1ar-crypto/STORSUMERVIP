@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>اختبار استعادة Sumer Rest</title>
+<style>
+body{margin:0;background:#101214;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+main{max-width:520px;margin:auto;padding:20px}
+.card{background:#17191d;border:1px solid #2c3037;border-radius:18px;padding:16px;margin:12px 0}
+h1{font-size:22px}.muted{color:#9da2aa;font-size:12px;line-height:1.7}
+input,button{font:inherit;width:100%;box-sizing:border-box;border-radius:12px;padding:13px;margin-top:9px}
+input{background:#111417;color:#fff;border:1px solid #2c3037}
+button{border:0;background:#f28b42;color:#111;font-weight:800}
+button.secondary{background:#25292e;color:#fff;border:1px solid #2c3037}
+.row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #2c3037}
+.ok{color:#27c96f}.warn{color:#f6c453}.err{color:#ff7474}
+</style>
+</head>
+<body>
+<main>
+<h1>🧪 اختبار Restore — Sumer Rest</h1>
+<div class="card">
+<p class="muted">هذه الصفحة للاختبار فقط. تستعيد <b>سجل مخزون واحد</b> من ملف JSON إلى Supabase. لا تعمل على main بحد ذاتها.</p>
+<label>اختر ملف SumerRest.json</label>
+<input id="file" type="file" accept=".json,application/json">
+<label>الباركود</label>
+<input id="barcode" value="2041970526525" inputmode="numeric">
+<button onclick="inspect()">🔎 فحص قبل الاستعادة</button>
+</div>
+
+<div id="result" class="card" style="display:none">
+<div class="row"><span>الصنف</span><b id="name">—</b></div>
+<div class="row"><span>الكمية الحالية في Supabase</span><b id="current">—</b></div>
+<div class="row"><span>الكمية داخل Backup</span><b id="backup">—</b></div>
+<p id="status" class="muted"></p>
+<button id="restore" onclick="restoreOne()" style="display:none">♻️ استعادة هذا الصنف فقط</button>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let backupData=null, target=null;
+
+function cfg(){
+  const url=localStorage.getItem('sumer_supabase_url');
+  const key=localStorage.getItem('sumer_supabase_key');
+  if(!url||!key) throw new Error('بيانات Supabase غير موجودة في هذا المتصفح. افتح موقع backup-test أولاً وتأكد أنه متصل.');
+  return {url:url.replace(/\/$/,''),key};
+}
+function headers(){
+  const {key}=cfg();
+  return {'apikey':key,'Authorization':'Bearer '+key,'Content-Type':'application/json'};
+}
+async function inspect(){
+  try{
+    const f=$('file').files[0];
+    if(!f) throw new Error('اختَر ملف SumerRest.json أولاً.');
+    backupData=JSON.parse(await f.text());
+    const barcode=$('barcode').value.trim();
+    const products=backupData?.data?.products||[];
+    const stocks=backupData?.data?.stock||[];
+    target=products.find(p=>p.barcode===barcode);
+    if(!target) throw new Error('الباركود غير موجود داخل النسخة الاحتياطية.');
+    const bs=stocks.find(s=>s.product_id===target.id);
+    if(!bs) throw new Error('لا يوجد سجل مخزون لهذا الصنف داخل النسخة الاحتياطية.');
+
+    const {url}=cfg();
+    const pr=await fetch(url+'/rest/v1/products?select=id,name,barcode&id=eq.'+encodeURIComponent(target.id),{headers:headers()});
+    const prod=await pr.json();
+    if(!pr.ok||!prod.length) throw new Error('الصنف غير موجود في قاعدة البيانات الحالية.');
+    const sr=await fetch(url+'/rest/v1/stock?select=id,warehouse_id,product_id,quantity&id=eq.'+encodeURIComponent(bs.id),{headers:headers()});
+    const stock=await sr.json();
+    if(!sr.ok||!stock.length) throw new Error('سجل المخزون المحدد غير موجود في قاعدة البيانات الحالية.');
+
+    $('result').style.display='block';
+    $('name').textContent=prod[0].name+' — '+barcode;
+    $('current').textContent=stock[0].quantity;
+    $('backup').textContent=bs.quantity;
+    $('status').innerHTML='<span class="warn">تم الفحص. لم يتم تعديل أي شيء بعد.</span>';
+    $('restore').style.display='block';
+  }catch(e){
+    $('result').style.display='block';
+    $('status').innerHTML='<span class="err">'+(e.message||e)+'</span>';
+    $('restore').style.display='none';
+  }
+}
+async function restoreOne(){
+  if(!target) return;
+  if(!confirm('استعادة كمية هذا الصنف فقط من الـBackup؟')) return;
+  try{
+    const {url}=cfg();
+    const bs=(backupData.data.stock||[]).find(s=>s.product_id===target.id);
+    const sr=await fetch(url+'/rest/v1/stock?id=eq.'+encodeURIComponent(bs.id),{
+      method:'PATCH',headers:headers(),body:JSON.stringify({quantity:bs.quantity,updated_at:new Date().toISOString()})
+    });
+    const body=await sr.text();
+    if(!sr.ok) throw new Error('فشل الاستعادة: HTTP '+sr.status+' '+body);
+    $('current').textContent=bs.quantity;
+    $('status').innerHTML='<span class="ok">✓ تمت استعادة هذا السجل فقط بنجاح.</span>';
+    $('restore').style.display='none';
+  }catch(e){
+    $('status').innerHTML='<span class="err">'+(e.message||e)+'</span>';
+  }
+}
+</script>
+</main>
+</body>
+</html>
