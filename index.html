@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101214">
+<title>أمين المخزن — SUMER REST</title>
+<style>
+:root{
+  --bg:#101214;--panel:#17191d;--panel2:#1d2025;--line:#2c3037;
+  --text:#f5f5f5;--muted:#9da2aa;--orange:#f28b42;--orange2:#c86627;
+  --green:#27c96f;--red:#ff5d5d;--yellow:#f6c453;--blue:#5ca8ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Tahoma,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{border:0;cursor:pointer}
+body{min-height:100vh}
+.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:94px}
+.top{padding:18px 18px 8px;display:flex;justify-content:space-between;align-items:center}
+.brand small{display:block;color:var(--orange);font-weight:800;font-size:13px;margin-bottom:3px}
+.brand h1{margin:0;font-size:30px;line-height:1.1}
+.saved{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 0 6px rgba(39,201,111,.12)}
+.bell{width:48px;height:48px;border-radius:15px;background:var(--panel);border:1px solid var(--line);color:#fff;font-size:22px;position:relative}
+.badge{position:absolute;top:-5px;left:-5px;background:var(--red);min-width:20px;height:20px;padding:0 5px;border-radius:10px;font-size:11px;display:grid;place-items:center}
+.screen{padding:10px 16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:8px 0 22px}
+.statbox{background:linear-gradient(180deg,#1b1d21,#16181c);border:1px solid var(--line);border-radius:18px;padding:13px 10px;text-align:center}
+.statbox .n{font-size:24px;font-weight:900;margin-bottom:3px}
+.statbox .l{font-size:11px;color:var(--muted)}
+.hero{background:linear-gradient(145deg,#24272c,#17191d);border:1px solid var(--line);border-radius:24px;padding:18px;margin-bottom:14px}
+.hero-title{font-size:21px;font-weight:900;margin-bottom:5px}
+.hero-sub{color:var(--muted);font-size:12px;line-height:1.8}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.action{background:var(--panel);border:1px solid var(--line);border-radius:19px;padding:18px 13px;text-align:right;color:#fff;min-height:105px}
+.action .ico{font-size:27px;margin-bottom:10px}.action b{display:block;font-size:16px}.action small{color:var(--muted);display:block;margin-top:4px}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:22px 0 10px}
+.section-title h2{font-size:19px;margin:0}.section-title button{background:transparent;color:var(--orange);font-size:12px}
+.product-list{display:grid;gap:9px}
+.product{background:#1a1c20;border:1px solid var(--line);border-radius:17px;padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.product .name{font-weight:900;font-size:16px}.product .meta{color:var(--muted);font-size:11px;margin-top:5px}
+.product .qty{text-align:left}.product .qty strong{font-size:23px}.product .qty small{display:block;color:var(--muted);font-size:10px}
+.product.low{border-right:4px solid var(--red)}.product.ok{border-right:4px solid var(--green)}
+.notice{background:#1b1d21;border:1px solid var(--line);border-radius:17px;padding:13px;margin:8px 0}
+.notice-row{display:flex;gap:10px;align-items:flex-start}.notice .ni{font-size:22px}.notice b{font-size:13px}.notice small{display:block;color:var(--muted);margin-top:3px;line-height:1.6}
+.empty{padding:30px;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed var(--line);border-radius:17px}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:78px;background:rgba(16,18,20,.97);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;z-index:20}
+.nav{color:#8e949d;font-size:10px;text-align:center;min-width:62px}.nav span{display:block;font-size:24px;margin-bottom:3px}.nav.active{color:var(--orange)}
+.bar{display:flex;align-items:center;gap:10px;margin:4px 0 14px}.back{background:transparent;color:#fff;font-size:31px;width:38px}.title{font-weight:900;font-size:22px;flex:1}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:15px;margin:10px 0}
+.field{margin:12px 0}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:7px}.field input,.field select,.field textarea{width:100%;background:#111417;color:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;outline:none}
+.primary{width:100%;background:var(--orange);color:#111;padding:15px;border-radius:14px;font-weight:900}.secondary{width:100%;background:#23262b;color:#fff;border:1px solid var(--line);padding:13px;border-radius:14px;margin-top:9px}.danger{background:#331a1a;color:#ffb1b1}
+.camera{height:300px;border:2px solid var(--green);border-radius:22px;display:grid;place-items:center;overflow:hidden;position:relative;background:#071015}.camera video{width:100%;height:100%;object-fit:cover;display:none}.frame{width:78%;height:100px;border:2px solid #32d875;border-radius:16px;box-shadow:0 0 0 999px rgba(0,0,0,.28)}
+.center{text-align:center}.muted{color:var(--muted)}.error{color:#ff7474;font-size:12px;margin-top:10px;line-height:1.6}.success{background:#092719;border:1px solid #1f8c4c;border-radius:20px;padding:20px;text-align:center}.check{font-size:52px}.row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.orange{color:var(--orange)}.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}
+.qtybox{display:flex;align-items:center;justify-content:space-between;background:#111417;border:1px solid var(--line);border-radius:15px;padding:7px;margin:12px 0}.qtybox button{width:45px;height:45px;border-radius:12px;background:#252a30;color:#fff;font-size:24px}.qtybox input{width:90px;height:45px;border:0;background:transparent;color:#fff;text-align:center;font-size:23px;font-weight:900;outline:none}.qtybox input::-webkit-inner-spin-button,.qtybox input::-webkit-outer-spin-button{opacity:1}
+.hidden{display:none!important}
+.low-alert{border:1px solid rgba(246,196,83,.35);background:linear-gradient(145deg,#2a2417,#1a1c20)}
+.low-alert.out{border-color:rgba(255,93,93,.4);background:linear-gradient(145deg,#2a1818,#1a1c20)}
+.low-alert-title{display:flex;align-items:center;gap:9px;font-weight:900;font-size:17px}
+.low-alert-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.low-alert-item:last-child{border-bottom:0}
+.low-alert-name{font-weight:800}
+.low-alert-meta{font-size:11px;color:var(--muted);margin-top:3px}
+.stock-pill{padding:6px 9px;border-radius:10px;font-size:11px;font-weight:900;white-space:nowrap}
+.stock-pill.low{background:rgba(246,196,83,.13);color:var(--yellow)}
+.stock-pill.out{background:rgba(255,93,93,.13);color:#ff8b8b}
+.connection{border:1px solid #3a4c60!important}.connection h3{margin:0 0 5px}.connection p{font-size:11px;color:var(--muted)}
+.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tab{white-space:nowrap;background:#1b1d21;border:1px solid var(--line);color:#bbb;border-radius:999px;padding:9px 14px;font-size:12px}.tab.active{background:var(--orange);color:#111;border-color:var(--orange);font-weight:900}
+.report-card{background:linear-gradient(145deg,#211b17,#18191c);border:1px solid #4a3325;border-radius:22px;padding:18px;margin-bottom:10px}.report-big{font-size:29px;font-weight:900;color:var(--orange)}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.mini{background:#111417;border:1px solid var(--line);border-radius:14px;padding:12px}.mini small{color:var(--muted);display:block;margin-bottom:5px}.mini b{font-size:16px}
+.search{margin:10px 0}.search input{width:100%;background:#17191d;border:1px solid var(--line);color:#fff;border-radius:14px;padding:13px}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#092719;border:1px solid #23864a;padding:12px 18px;border-radius:14px;z-index:100;display:none;font-weight:800}
+.modal{position:fixed;inset:0;background:#0009;z-index:80;display:none;align-items:flex-end;justify-content:center;padding:12px}.modal.open{display:flex}.sheet{width:min(520px,100%);max-height:88vh;overflow:auto;background:#181a1e;border:1px solid var(--line);border-radius:23px 23px 10px 10px;padding:17px}
+.close{float:left;background:#2a2e34;color:#fff;border-radius:10px;padding:8px 12px}
+.barcode-preview{background:#fff;border-radius:16px;padding:14px;margin-top:10px;text-align:center;min-height:130px;display:grid;place-items:center}.barcode-preview svg{max-width:100%;height:auto}.barcode-number{color:#111;font-weight:800;letter-spacing:1px;margin-top:4px}.barcode-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.barcode-actions button{padding:11px;border-radius:12px;background:#25292e;color:#fff;border:1px solid var(--line)}.barcode-help{font-size:11px;color:var(--muted);line-height:1.6;margin-top:6px}.scan-alt{font-size:11px;color:var(--muted);margin-top:7px}#html5qr{width:100%;margin-top:10px;display:none}.print-barcode{background:#fff;color:#111;padding:20px;border-radius:12px}
+.product-actions{display:flex;gap:7px;margin-top:9px}.product-actions button{flex:1;padding:9px;border-radius:10px;background:#25292e;color:#fff;border:1px solid var(--line)}.product-actions .edit-btn{color:#7ee787}.product-actions .disable-btn{color:#ff9b9b}.inventory-card{padding:12px;border:1px solid var(--line);border-radius:14px;background:#171a1e}.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}.modal-backdrop.show{display:flex}.edit-modal{width:min(520px,100%);max-height:90vh;overflow:auto;background:#171a1e;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.edit-modal h2{margin:0 0 14px}.edit-modal .modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.edit-modal .modal-actions button{padding:12px;border-radius:12px}.edit-save{background:var(--orange);color:#111;font-weight:800}.edit-cancel{background:#25292e;color:#fff;border:1px solid var(--line)}
+#connectionPanel{display:none!important}
+@media(max-width:380px){.brand h1{font-size:25px}.stats{gap:6px}.statbox{padding:11px 5px}.actions{gap:7px}}
+
+/* ===== Backup V1 ===== */
+.backup-btn{width:100%;background:#23262b;color:#fff;border:1px solid var(--line);padding:13px;border-radius:14px;margin-top:9px}
+.backup-note{font-size:11px;color:var(--muted);line-height:1.7;margin-top:7px}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<style>
+/* Login is disabled temporarily — inventory opens directly. */
+#login-screen,#loginScreen,.login-overlay,.login-screen{display:none!important}
+</style>
+
+<style>
+/* ===== Sumer Rest simple professional roles ===== */
+#loginOverlay{position:fixed;inset:0;background:radial-gradient(circle at 50% -10%,#2a2119 0,#101214 48%);z-index:100000;display:flex;align-items:center;justify-content:center;padding:18px}
+.login-box{width:min(430px,100%);background:rgba(23,25,29,.98);border:1px solid #343941;border-radius:26px;padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.55)}
+.login-brand{text-align:center;margin-bottom:22px}.login-brand .logo{font-size:42px}.login-brand h2{margin:6px 0 3px;font-size:25px}.login-brand p{margin:0;color:var(--muted);font-size:12px}
+.login-user{display:flex;align-items:center;gap:10px;background:#111417;border:1px solid var(--line);border-radius:14px;padding:11px;margin-bottom:12px}
+.login-user .avatar{width:38px;height:38px;border-radius:12px;background:#252a30;display:grid;place-items:center;font-size:20px}
+.login-user b{display:block;font-size:13px}.login-user small{color:var(--muted);font-size:10px}
+.login-pass{position:relative}.login-pass input{padding-left:48px!important}.login-eye{position:absolute;left:7px;bottom:6px;width:38px;height:38px;border-radius:10px;background:#252a30;color:#fff;border:1px solid var(--line)}
+.login-error{min-height:20px;color:#ff7474;font-size:12px;line-height:1.5;margin:9px 2px}
+.login-btn{width:100%;background:var(--orange);color:#111;padding:15px;border-radius:14px;font-weight:900}
+.login-hint{text-align:center;color:var(--muted);font-size:10px;line-height:1.7;margin-top:12px}
+.user-chip{display:flex;align-items:center;gap:7px;margin-top:5px;color:var(--muted);font-size:11px}
+.role-chip{display:inline-flex;align-items:center;gap:5px;background:#23262b;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:#fff;font-size:10px}
+.logout-btn{background:#23262b;color:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:10px}
+.role-hidden{display:none!important}
+</style>
+</head>
+
+<body>
+<div id="toast" class="toast">تم حفظ العملية ✓</div>
+<div id="loginOverlay">
+  <div class="login-box" dir="rtl">
+    <div class="login-brand">
+      <div class="logo">📦</div>
+      <h2>Sumer Rest</h2>
+      <p>نظام إدارة المخزن</p>
+    </div>
+    <div class="login-user">
+      <div class="avatar">🔐</div>
+      <div><b>تسجيل الدخول</b><small>استخدم حساب الموظف المصرح له</small></div>
+    </div>
+    <div class="field"><label>البريد الإلكتروني</label><input id="loginEmail" type="email" autocomplete="username" placeholder="name@example.com"></div>
+    <div class="field login-pass"><label>كلمة المرور</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••"><button class="login-eye" type="button" onclick="toggleLoginPassword()">👁️</button></div>
+    <div id="loginError" class="login-error"></div>
+    <button id="loginBtn" class="login-btn" onclick="loginUser()">دخول إلى النظام</button>
+    <div class="login-hint">الوصول يعتمد على صلاحية الحساب داخل النظام.</div>
+  </div>
+</div>
+
+
+<div class="app">
+<header class="top">
+  <div class="brand">
+    <small>مخزن المطعم</small>
+    <h1>أمين المخزن</h1>
+    <div class="saved"><span class="dot"></span><span id="saveState">محفوظ تلقائياً</span></div>
+    <div class="user-chip"><span id="currentUserRole" class="role-chip">—</span><button class="logout-btn" onclick="logoutUser()">خروج</button></div>
+  </div>
+  <button class="bell" onclick="showScreen('notifications')">🔔<span id="badge" class="badge">0</span></button>
+</header>
+
+<section id="connectionPanel" class="screen">
+  <div class="card connection">
+    <h3>🔗 ربط قاعدة البيانات</h3>
+    <p>أدخل بيانات Supabase مرة واحدة، وسيتم حفظها على الجهاز.</p>
+    <div class="field"><label>Supabase URL</label><input id="supabaseUrl" placeholder="https://xxxx.supabase.co"></div>
+    <div class="field"><label>Publishable key</label><input id="supabaseKey" placeholder="sb_publishable_..." autocomplete="off"></div>
+    <button class="primary" onclick="connectSupabase()">اختبار الاتصال وحفظ</button>
+    <div id="connectionStatus" class="error"></div>
+  </div>
+</section>
+
+<main id="dashboard" class="screen">
+  <div class="hero">
+    <div class="hero-title">إدارة المخزن بالكامل</div>
+    <div class="hero-sub">كل دخول وخروج محفوظ بالصنف والكمية والسعر والوقت، والتقارير تحسب بالدينار العراقي.</div>
+  </div>
+
+  <div class="stats">
+    <div class="statbox"><div class="n" id="totalProducts">0</div><div class="l">صنف</div></div>
+    <div class="statbox"><div class="n" id="lowCount">0</div><div class="l">منخفض</div></div>
+    <div class="statbox"><div class="n" id="todayMoves">0</div><div class="l">حركة اليوم</div></div>
+  </div>
+
+  <div class="actions">
+    <button class="action" onclick="showScreen('issue')"><div class="ico">📤</div><b>صرف من المخزن</b><small>باركود + كمية + مستلم</small></button>
+    <button class="action" onclick="showScreen('receive')"><div class="ico">📥</div><b>دخول البضاعة</b><small>إضافة صنف أو زيادة الكمية</small></button>
+    <button class="action" onclick="showScreen('inventory')"><div class="ico">📦</div><b>كل الأصناف</b><small>الكمية الحالية لكل صنف</small></button>
+    <button class="action" onclick="showScreen('report')"><div class="ico">📊</div><b>التقارير</b><small>اليومي والأسبوعي والشهري</small></button>
+    <button class="action" onclick="window.location.href='operations-test.html'"><div class="ico">📋</div><b>سجل العمليات</b><small>عرض كل عمليات الصرف والاستلام</small></button>
+<button class="action" onclick="window.location.href='inventory-count.html'"><div class="ico">📋</div><b>الجرد الفعلي</b><small>مطابقة الكمية المسجلة مع الفعلية</small></button> 
+</div>
+
+  <button class="backup-btn" onclick="openBackup()">💾 نسخة احتياطية</button>
+<div class="section-title"><h2>الأصناف في المخزن</h2><button onclick="loadAll()">تحديث ↻</button></div>
+  <div id="lowStockPanel" class="card hidden"></div>
+  <div id="dashboardProducts" class="product-list"></div>
+
+  <div class="section-title"><h2>آخر الحركات</h2><button onclick="showScreen('notifications')">عرض الكل</button></div>
+  <div id="dashboardMoves"></div>
+</main>
+
+<main id="inventory" class="screen hidden">
+  <div class="bar"><button class="back" onclick="showScreen('dashboard')">‹</button><div class="title">الأصناف بالمخزن</div><span>📦</span></div>
+  <div class="search"><input id="inventorySearch" oninput="renderInventory()" placeholder="ابحث باسم الصنف أو الباركود"></div>
+  <div id="inventoryList" class="product-list"></div>
+</main>
+
+<div id="editProductModal" class="modal-backdrop" onclick="if(event.target===this)closeEditProduct()">
+  <div class="edit-modal" dir="rtl">
+    <h2>✏️ تعديل الصنف</h2>
+    <input id="editProductId" type="hidden">
+    <div class="field"><label>اسم الصنف *</label><input id="editProductName"></div>
+    <div class="field"><label>الباركود *</label><input id="editProductBarcode" inputmode="numeric"></div>
+    <div class="field"><label>الوحدة *</label><select id="editProductUnit"><option>حبة</option><option>كرتون</option><option>غرام</option><option>كيلو</option><option>كيس</option><option>علبة</option><option>لتر</option><option>صندوق</option></select></div>
+    <div class="field"><label>الفئة</label><input id="editProductCategory" placeholder="مواد غذائية"></div>
+    <div class="field"><label>سعر الوحدة بالدينار العراقي *</label><input id="editProductPrice" type="number" min="0" step="1" inputmode="numeric"></div>
+    <div class="field"><label>الحد الأدنى للمخزون</label><input id="editProductMin" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div id="editProductStatus" class="error"></div>
+    <div class="modal-actions"><button class="edit-cancel" onclick="closeEditProduct()">إلغاء</button><button class="edit-save" onclick="saveEditProduct()">✓ حفظ التعديل</button></div>
+  </div>
+</div>
+
+<main id="issue" class="screen hidden">
+  <div class="bar"><button class="back" onclick="showScreen('dashboard')">‹</button><div class="title">صرف من المخزن</div><span>📤</span></div>
+
+  <div id="scanView" class="card center">
+    <h2>امسح الباركود</h2>
+    <p class="muted">وجه كاميرا الجهاز على باركود الصنف</p>
+    <div class="camera"><video id="video" playsinline></video><div class="frame"></div></div><div id="html5qr"></div>
+    <p class="muted">🔒 حدد الصنف بالباركود أو ابحث عنه بالاسم</p>
+    <button class="primary" onclick="startScanner()">📷 تشغيل الكاميرا ومسح الباركود</button><div class="scan-alt">إذا لم يدعم المتصفح قارئ الباركود المدمج، سيعمل القارئ البديل تلقائياً.</div>
+    <div class="field"><label>🔎 بحث باسم الصنف</label><input id="issueNameSearch" autocomplete="off" placeholder="مثلاً: ماء لايف" oninput="searchIssueProduct()"></div>
+    <div id="issueSearchResults" class="product-list"></div>
+    <div class="field"><label>أو أدخل الباركود يدوياً</label><input id="manualBarcode" inputmode="numeric" placeholder="2005346503879"></div>
+    <button class="secondary" onclick="manualLookup()">بحث بالباركود 🔎</button>
+    <div id="scanError" class="error"></div>
+  </div>
+
+  <div id="itemView" class="hidden">
+    <div class="card">
+      <div class="green">✓ تم التعرف على الصنف</div>
+      <h2 id="itemName">—</h2>
+      <div class="muted" id="itemBarcode">—</div>
+      <div class="row"><span>المتوفر حالياً</span><b id="itemAvailable" class="green">—</b></div>
+      <div class="row"><span>سعر الوحدة</span><b id="itemPrice" class="yellow">—</b></div>
+    </div>
+    <div class="card">
+      <b>الكمية المطلوب صرفها</b>
+      <div class="qtybox"><button type="button" onclick="changeQty(-1)">−</button><input id="qty" type="number" min="1" step="1" inputmode="numeric" value="1" oninput="manualQtyChange()" aria-label="الكمية المطلوب صرفها"><button type="button" onclick="changeQty(1)">+</button></div>
+      <div class="row"><span>المتبقي بعد الصرف</span><b id="remaining" class="green">—</b></div>
+      <div class="field"><label>المستلم / القسم *</label><input id="receiver" value="المطبخ الرئيسي"></div>
+      <div class="field"><label>سبب الصرف</label><select id="reason"><option>استخدام يومي</option><option>طلب قسم</option><option>تالف</option><option>أخرى</option></select></div>
+      <div class="field"><label>ملاحظات</label><textarea id="notes" rows="2"></textarea></div>
+      <button class="primary" onclick="confirmIssue()">✓ تأكيد الصرف</button>
+      <button class="secondary" onclick="resetIssue()">إلغاء</button>
+    </div>
+  </div>
+
+  <div id="successView" class="hidden success">
+    <div class="check">✓</div><h2>تم الصرف بنجاح</h2>
+    <div class="card">
+      <div class="row"><span>الصنف</span><b id="doneName">—</b></div>
+      <div class="row"><span>الكمية</span><b id="doneQty" class="red">—</b></div>
+      <div class="row"><span>قيمة الصرف</span><b id="doneTotal" class="yellow">—</b></div>
+      <div class="row"><span>المتبقي</span><b id="doneRemaining" class="green">—</b></div>
+      <div class="row"><span>المستلم</span><b id="doneReceiver">—</b></div>
+      <div class="row"><span>الوقت</span><b id="doneTime">—</b></div>
+    </div>
+    <button class="primary" onclick="resetIssue()">+ صرف صنف آخر</button>
+  </div>
+</main>
+
+<main id="receive" class="screen hidden">
+  <div class="bar"><button class="back" onclick="showScreen('dashboard')">‹</button><div class="title">دخول البضاعة</div><span>📥</span></div>
+  <div class="card">
+    <div class="field"><label>اسم الصنف *</label><input id="receiveName" placeholder="مثلاً: ماء لايف"></div>
+    <div class="field"><label>الباركود</label><input id="receiveBarcode" inputmode="numeric" placeholder="اتركه فارغاً للتوليد التلقائي" oninput="previewReceiveBarcode()"></div>
+    <button class="secondary" type="button" onclick="generateReceiveBarcode()">🔄 توليد باركود جديد</button>
+    <div class="barcode-preview" id="receiveBarcodePreview"><div class="muted">سيظهر الباركود هنا تلقائياً</div></div>
+    <div class="barcode-help">إذا كان الصنف موجوداً استخدم باركوده الحالي. وإذا كان جديداً اترك الحقل فارغاً ليتم توليد باركود EAN-13 تلقائياً.</div>
+    <div class="field"><label>الوحدة *</label><select id="receiveUnit"><option>حبة</option><option>كرتون</option><option>غرام</option><option>كيلو</option><option>كيس</option><option>علبة</option><option>لتر</option><option>صندوق</option></select></div>
+    <div class="field"><label>الفئة</label><input id="receiveCategory" placeholder="مواد غذائية"></div>
+    <div class="field"><label>الكمية الواردة *</label><input id="receiveQty" type="number" min="0.01" step="0.01" inputmode="decimal"></div>
+    <div class="field"><label>سعر الوحدة بالدينار العراقي *</label><input id="receivePrice" type="number" min="0" step="1" inputmode="numeric"></div>
+    <div class="field"><label>الحد الأدنى للمخزون</label><input id="receiveMin" type="number" min="0" step="0.01" value="0"></div>
+    <div class="field"><label>ملاحظات</label><textarea id="receiveNote" rows="2"></textarea></div>
+    <button class="primary" onclick="saveReceipt()">✓ حفظ ودخول للمخزن</button>
+    <div id="receiveStatus" class="error"></div>
+  </div>
+  <div id="receiveSuccess" class="hidden success">
+    <div class="check">✓</div><h2>تم إدخال البضاعة</h2>
+    <div class="card"><div class="row"><span>الصنف</span><b id="receivedSummary">—</b></div><div class="row"><span>الكمية</span><b id="receivedQty" class="green">—</b></div><div class="row"><span>سعر الوحدة</span><b id="receivedPrice" class="yellow">—</b></div><div class="row"><span>قيمة البضاعة</span><b id="receivedTotal">—</b></div></div>
+    <div class="barcode-preview" id="receivedBarcodePreview"><div class="muted">الباركود</div></div>
+    <div class="barcode-actions"><button onclick="printReceivedBarcode()">🖨️ طباعة</button><button onclick="downloadReceivedBarcode()">⬇️ حفظ صورة</button></div>
+    <button class="primary" onclick="resetReceive()">+ إدخال بضاعة أخرى</button>
+  </div>
+</main>
+
+<main id="report" class="screen hidden">
+  <div class="bar"><button class="back" onclick="showScreen('dashboard')">‹</button><div class="title">التقارير</div><span>📊</span></div>
+  <div class="card">
+    <div class="field">
+      <label>نوع التقرير</label>
+      <select id="reportPeriod" onchange="loadSelectedReport()">
+        <option value="today">تقرير اليوم</option>
+        <option value="week">تقرير الأسبوع</option>
+        <option value="month">تقرير الشهر</option>
+      </select>
+    </div>
+    <button class="primary" onclick="loadSelectedReport()">تحديث التقرير ↻</button>
+  </div>
+  <div class="report-card">
+    <div class="muted" id="reportTitle">تقرير اليوم</div>
+    <div id="reportIssueValue" class="report-big">0 د.ع</div>
+    <div class="report-grid">
+      <div class="mini"><small>الكمية المصروفة</small><b id="reportIssueQty">0</b></div>
+      <div class="mini"><small>عمليات الصرف</small><b id="reportIssueCount">0</b></div>
+      <div class="mini"><small>قيمة الدخول</small><b id="reportReceiveValue">0 د.ع</b></div>
+      <div class="mini"><small>كمية الدخول</small><b id="reportReceiveQty">0</b></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row"><span>من</span><b id="reportFrom">—</b></div>
+    <div class="row"><span>إلى</span><b id="reportTo">—</b></div>
+  </div>
+  <div class="section-title"><h2>تفاصيل الصرف</h2></div>
+  <div id="reportIssues"></div>
+</main>
+
+<main id="notifications" class="screen hidden">
+  <div class="bar"><button class="back" onclick="showScreen('dashboard')">‹</button><div class="title">الإشعارات</div><span>🔔</span></div>
+  <div class="card"><b>إشعارات دخول وخروج المخزن</b><p class="muted">يتم جلب آخر عمليات الدخول والصرف من قاعدة البيانات.</p></div>
+  <div id="notificationsList"></div>
+</main>
+
+<nav class="bottom">
+  <div class="nav active" id="navDashboard" onclick="showScreen('dashboard')"><span>⌂</span>الرئيسية</div>
+  <div class="nav" onclick="showScreen('inventory')"><span>▣</span>المخزن</div>
+  <div class="nav" onclick="showScreen('issue')"><span>⇩</span>صرف</div>
+  <div class="nav" onclick="showScreen('receive')"><span>⇧</span>استلام</div>
+  <div class="nav" onclick="showScreen('report')"><span>▥</span>التقارير</div>
+</nav>
+</div>
+
+<script>
+let supabaseUrl=localStorage.getItem('sumer_supabase_url')||'';
+let supabaseKey=localStorage.getItem('sumer_supabase_key')||'';
+let warehouses=[],selectedWarehouse=null,products=[],stock=[],issues=[],receipts=[],movements=[];
+let stream=null,detector=null,product=null,stockRow=null,qty=1;
+
+const $=id=>document.getElementById(id);
+const headers=()=>({'apikey':supabaseKey,'Authorization':'Bearer '+(authSession?.access_token||supabaseKey)});
+const money=n=>Number(n||0).toLocaleString('ar-IQ')+' د.ع';
+const num=n=>Number(n||0).toLocaleString('ar-IQ');
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+let authSession=null;
+let currentUser=null;
+let currentRole=null;
+
+const ROLE_LABELS={
+  admin:'👑 مدير',
+  warehouse:'📦 أمين مخزن',
+  viewer:'👁️ مشاهد'
+};
+
+const ROLE_PERMISSIONS={
+  admin:new Set(['all']),
+  warehouse:new Set(['inventory','receive','issue','notifications']),
+  viewer:new Set(['inventory','report','notifications'])
+};
+
+function roleAllowed(permission){
+  if(currentRole==='admin') return true;
+  return !!(ROLE_PERMISSIONS[currentRole] && ROLE_PERMISSIONS[currentRole].has(permission));
+}
+
+function setLoginError(message){
+  const el=$('loginError');
+  if(el) el.textContent=message||'';
+}
+
+function showLogin(){
+  const overlay=$('loginOverlay');
+  if(overlay) overlay.style.display='flex';
+  document.querySelector('.app')?.classList.add('auth-locked');
+  setLoginError('');
+}
+
+function hideLogin(){
+  const overlay=$('loginOverlay');
+  if(overlay) overlay.style.display='none';
+  document.querySelector('.app')?.classList.remove('auth-locked');
+}
+
+function toggleLoginPassword(){
+  const input=$('loginPassword');
+  const btn=document.querySelector('.login-eye');
+  if(!input)return;
+  input.type=input.type==='password'?'text':'password';
+  if(btn)btn.textContent=input.type==='password'?'👁️':'🙈';
+}
+
+async function fetchRole(user){
+  const url=supabaseUrl;
+  const key=supabaseKey;
+  if(!url||!key) throw new Error('بيانات Supabase غير محفوظة على هذا الجهاز.');
+  const r=await fetch(
+    url+'/rest/v1/user_roles?select=role,full_name,active&user_id=eq.'+encodeURIComponent(user.id)+'&limit=1',
+    {headers:{
+      'apikey':key,
+      'Authorization':'Bearer '+authSession.access_token
+    }}
+  );
+  if(!r.ok) throw new Error('تعذر قراءة صلاحية الحساب.');
+  const rows=await r.json();
+  if(!rows.length) throw new Error('هذا الحساب غير مضاف إلى نظام الصلاحيات.');
+  const row=rows[0];
+  if(row.active===false) throw new Error('هذا الحساب غير فعال. راجع المدير.');
+  if(!['admin','warehouse','viewer'].includes(row.role)) throw new Error('صلاحية الحساب غير معروفة.');
+  currentRole=row.role;
+  currentUser=user;
+  const chip=$('currentUserRole');
+  if(chip) chip.textContent=ROLE_LABELS[currentRole]||currentRole;
+  applyRoleUI();
+  return true;
+}
+
+function applyRoleUI(){
+  const map={
+    inventory:'showScreen',
+    issue:'showScreen',
+    receive:'showScreen',
+    report:'showScreen'
+  };
+  document.querySelectorAll('.bottom .nav').forEach(nav=>{
+    const text=(nav.textContent||'').trim();
+    if(text.includes('المخزن')) nav.style.display=roleAllowed('inventory')?'':'none';
+    else if(text.includes('صرف')) nav.style.display=roleAllowed('issue')?'':'none';
+    else if(text.includes('استلام')) nav.style.display=roleAllowed('receive')?'':'none';
+    else if(text.includes('التقارير')) nav.style.display=roleAllowed('report')?'':'none';
+  });
+}
+
+async function loginUser(){
+  const email=$('loginEmail')?.value.trim();
+  const password=$('loginPassword')?.value||'';
+  const btn=$('loginBtn');
+  if(!email||!password){setLoginError('أدخل البريد الإلكتروني وكلمة المرور.');return;}
+  if(!supabaseUrl||!supabaseKey){
+    setLoginError('بيانات قاعدة البيانات غير محفوظة. افتح النظام الأصلي مرة واحدة أو أعد حفظ بيانات Supabase.');
+    return;
+  }
+
+  if(btn){btn.disabled=true;btn.textContent='جاري تسجيل الدخول…';}
+  setLoginError('');
+
+  try{
+    const r=await fetch(supabaseUrl+'/auth/v1/token?grant_type=password',{
+      method:'POST',
+      headers:{'apikey':supabaseKey,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password})
+    });
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(data.error_description||data.msg||'البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+
+    authSession=data;
+    localStorage.setItem('sumer_auth_session',JSON.stringify(data));
+    await fetchRole(data.user);
+
+    hideLogin();
+    const welcome=$('loginWelcome');
+    if(welcome) welcome.textContent='مرحباً '+(currentRole==='admin'?'بالمدير':currentRole==='warehouse'?'بأمين المخزن':'بالمشاهد');
+    await loadConfig();
+  }catch(e){
+    authSession=null;currentUser=null;currentRole=null;
+    localStorage.removeItem('sumer_auth_session');
+    setLoginError(String(e?.message||e));
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='دخول إلى النظام';}
+  }
+}
+
+async function initAuth(){
+  if(!supabaseUrl||!supabaseKey){showLogin();return false;}
+  const saved=localStorage.getItem('sumer_auth_session');
+  if(!saved){showLogin();return false;}
+  try{
+    const session=JSON.parse(saved);
+    if(!session?.access_token||!session?.user) throw new Error('no session');
+    if(session.expires_at && Number(session.expires_at)*1000 < Date.now()+60000){
+      localStorage.removeItem('sumer_auth_session');
+      showLogin();return false;
+    }
+    authSession=session;
+    await fetchRole(session.user);
+    hideLogin();
+    return true;
+  }catch(e){
+    authSession=null;currentUser=null;currentRole=null;
+    localStorage.removeItem('sumer_auth_session');
+    showLogin();
+    return false;
+  }
+}
+
+function logoutUser(){
+  authSession=null;currentUser=null;currentRole=null;
+  localStorage.removeItem('sumer_auth_session');
+  document.querySelectorAll('.bottom .nav').forEach(n=>n.style.display='');
+  showLogin();
+  const p=$('loginPassword'); if(p)p.value='';
+  toast('تم تسجيل الخروج');
+}
+
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',2200)}
+function setStatus(id,t,ok=false){$(id).innerHTML=ok?'<span class="green">'+esc(t)+'</span>':'<span class="red">'+esc(t)+'</span>'}
+
+function loadConfig(){
+  if(supabaseUrl){$('supabaseUrl').value=supabaseUrl;$('supabaseKey').value=supabaseKey;if(supabaseKey)connectSupabase()}
+}
+async function connectSupabase(){
+  supabaseUrl=$('supabaseUrl').value.trim().replace(/\/$/,'');supabaseKey=$('supabaseKey').value.trim();
+  if(!supabaseUrl||!supabaseKey){setStatus('connectionStatus','أدخل الرابط والمفتاح');return}
+  setStatus('connectionStatus','جاري الاتصال…');
+  try{
+    const r=await fetch(supabaseUrl+'/rest/v1/products?select=id&limit=1',{headers:headers()});
+    if(!r.ok)throw new Error(await r.text());
+    localStorage.setItem('sumer_supabase_url',supabaseUrl);localStorage.setItem('sumer_supabase_key',supabaseKey);
+    setStatus('connectionStatus','تم الاتصال بنجاح',true);$('connectionPanel').classList.add('hidden');await loadAll();
+  }catch(e){setStatus('connectionStatus','فشل الاتصال. تأكد من URL والمفتاح.')}
+}
+
+async function sendLowStockTelegram(product, remaining, warehouse, alertType='LOW_STOCK'){
+  try{
+    const fnUrl=supabaseUrl.replace(/\/$/,'')+'/functions/v1/telegram-stock-v2';
+    const response=await fetch(fnUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json',...headers()},
+      body:JSON.stringify({
+        type:alertType,
+        table:'stock',
+        record:{
+          product_id:product.id,
+          warehouse_id:warehouse?.id||null,
+          quantity:Number(remaining),
+          min_stock:Number(product.min_stock||0),
+          product_name:product.name,
+          unit:product.unit||'وحدة',
+          warehouse_name:warehouse?.name||'المخزن'
+        }
+      })
+    });
+    const result=await response.text();
+    if(!response.ok){console.warn('Low stock Telegram error:',result);return false;}
+    return true;
+  }catch(error){console.warn('Low stock Telegram failed:',error);return false;}
+}
+
+
+async function sendMovementTelegram(table, record){
+  try{
+    const fnUrl=supabaseUrl.replace(/\/$/,'')+'/functions/v1/telegram-stock-v2';
+    const response=await fetch(fnUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json',...headers()},
+      body:JSON.stringify({
+        type:'INSERT',
+        table,
+        record
+      })
+    });
+    const result=await response.text();
+    if(!response.ok){
+      console.warn('Movement Telegram error:',result);
+      return false;
+    }
+    return true;
+  }catch(error){
+    console.warn('Movement Telegram failed:',error);
+    return false;
+  }
+}
+
+async function api(path,opts={}){
+  const r=await fetch(supabaseUrl+'/rest/v1/'+path,{...opts,headers:{...headers(),...(opts.headers||{})}});
+  const text=await r.text();let data=[];try{data=text?JSON.parse(text):[]}catch{data=text}
+  if(!r.ok)throw new Error(typeof data==='string'?data:JSON.stringify(data));
+  return data;
+}
+async function loadWarehouses(){
+  warehouses=await api('warehouses?select=id,name&limit=100');
+  selectedWarehouse=warehouses.find(w=>/sumer|رئيس|رئيسي|main/i.test(String(w.name)))||warehouses[0]||null;
+}
+async function loadProducts(){
+  products=await api('products?select=id,name,barcode,unit,category,active,unit_price,min_stock&active=eq.true&limit=1000');
+}
+async function loadStock(){
+  stock=await api('stock?select=id,warehouse_id,product_id,quantity,updated_at&limit=5000');
+}
+async function loadIssues(){
+  issues=await api('stock_issues?select=id,warehouse_id,product_id,quantity,received_by_name,reason,note,created_at,unit_price_snapshot&order=created_at.desc&limit=500');
+}
+async function loadReceipts(){
+  receipts=await api('stock_receipts?select=id,warehouse_id,product_id,quantity,note,created_at&order=created_at.desc&limit=500');
+}
+
+async function loadMovements(){
+  try{
+    movements=await api('stock_movements?select=*&order=created_at.desc&limit=1000');
+  }catch(e){
+    console.warn('stock_movements unavailable:',e);
+    movements=[];
+  }
+}
+
+function movementProductId(x){
+  return x.product_id ?? x.productId ?? x.product ?? x.item_id ?? x.itemId;
+}
+function movementQty(x){
+  return Number(x.quantity ?? x.qty ?? x.amount ?? 0);
+}
+function movementDate(x){
+  return new Date(x.created_at ?? x.createdAt ?? x.date ?? x.movement_at ?? x.movementAt ?? 0);
+}
+function movementType(x){
+  const raw=String(x.movement_type ?? x.type ?? x.action ?? x.direction ?? x.operation ?? '').toLowerCase();
+  if(/issue|out|exit|صرف|خروج|تالف|سحب/.test(raw)) return 'issue';
+  if(/receive|in|entry|دخل|دخول|استلام|إضافة/.test(raw)) return 'receive';
+  return String(x.quantity ?? x.qty ?? '').startsWith('-') ? 'issue' : 'receive';
+}
+function movementReceiver(x){
+  return x.received_by_name ?? x.receiver ?? x.received_by ?? x.department ?? x.reason ?? x.note ?? '';
+}
+function movementPrice(x,p){
+  const direct=Number(x.unit_price_snapshot ?? x.unit_price ?? x.price ?? 0);
+  if(direct>0) return direct;
+
+  // إذا كانت حركة الصرف مسجلة بسعر 0، استخدم سعر الصنف الحالي.
+  const productPrice=Number(
+    p?.unit_price ??
+    p?.price ??
+    p?.selling_price ??
+    p?.cost_price ??
+    p?.purchase_price ??
+    0
+  );
+  if(productPrice>0) return productPrice;
+
+  // احتياطياً: ابحث عن سعر الصنف داخل المخزون.
+  const pid=movementProductId(x);
+  const s=stock.find(row=>
+    String(row.product_id??row.productId??'')===String(pid)
+  );
+  return Number(
+    s?.unit_price ??
+    s?.price ??
+    s?.cost_price ??
+    s?.purchase_price ??
+    0
+  );
+}
+function warehouseStock(productId){
+  if(!selectedWarehouse)return null;
+  return stock.find(s=>s.warehouse_id===selectedWarehouse.id&&s.product_id===productId)||null;
+}
+function productById(id){return products.find(p=>p.id===id)}
+function moveDate(x){return new Date(x.created_at)}
+function isToday(d){const n=new Date();return d.toDateString()===n.toDateString()}
+
+async function loadAll(){
+  if(!supabaseKey)return;
+  try{
+    await loadWarehouses();await Promise.all([loadProducts(),loadStock(),loadIssues(),loadReceipts(),loadMovements()]);
+    renderDashboard();renderInventory();renderNotifications();loadWeeklyReport();
+    $('connectionPanel').classList.add('hidden');
+  }catch(e){
+    console.error(e);
+    if($('dashboardProducts'))$('dashboardProducts').innerHTML='<div class="empty">تعذر تحميل البيانات من قاعدة البيانات.</div>';
+  }
+}
+function renderLowStockAlerts(){
+  const panel=$('lowStockPanel');
+  if(!panel)return;
+
+  const low=products.map(p=>{
+    const s=warehouseStock(p.id);
+    const q=Number(s?.quantity||0);
+    const min=Number(p.min_stock||0);
+    return {p,s,q,min};
+  }).filter(x=>x.q<=x.min);
+
+  if(!low.length){
+    panel.classList.add('hidden');
+    panel.innerHTML='';
+    return;
+  }
+
+  low.sort((a,b)=>{
+    const ao=a.q<=0?0:1, bo=b.q<=0?0:1;
+    return ao-bo || (a.q-a.min)-(b.q-b.min);
+  });
+
+  const outCount=low.filter(x=>x.q<=0).length;
+  panel.className='card low-alert '+(outCount?'out':'');
+  panel.innerHTML=`
+    <div class="low-alert-title">
+      <span>${outCount?'🚨':'⚠️'}</span>
+      <span>${outCount?'أصناف نافدة أو منخفضة':'تنبيه مخزون منخفض'}</span>
+    </div>
+    <div class="muted" style="font-size:11px;margin:5px 0 9px">
+      ${outCount?`عندك ${num(outCount)} صنف يحتاج إعادة تزويد.`:`وصلت ${num(low.length)} أصناف إلى الحد الأدنى.`}
+    </div>
+    ${low.slice(0,12).map(x=>{
+      const out=x.q<=0;
+      return `<div class="low-alert-item">
+        <div>
+          <div class="low-alert-name">${esc(x.p.name)}</div>
+          <div class="low-alert-meta">الحد الأدنى: ${num(x.min)} ${esc(x.p.unit||'وحدة')}</div>
+        </div>
+        <span class="stock-pill ${out?'out':'low'}">${out?'نفد':'متوفر '+num(x.q)+' '+esc(x.p.unit||'وحدة')}</span>
+      </div>`;
+    }).join('')}
+    ${low.length>12?`<div class="muted" style="font-size:11px;margin-top:9px">و ${num(low.length-12)} أصناف أخرى…</div>`:''}
+  `;
+}
+
+function renderDashboard(){
+  renderLowStockAlerts();
+  const list=$('dashboardProducts');let visible=products.map(p=>({p,s:warehouseStock(p.id)})).filter(x=>x.s&&Number(x.s.quantity)>0);
+  $('totalProducts').textContent=num(products.length);
+  $('lowCount').textContent=num(products.filter(p=>{const s=warehouseStock(p.id);return s&&Number(s.quantity)<=Number(p.min_stock||0)}).length);
+  $('todayMoves').textContent=num((movements.length?movements:issues.map(x=>({...x,type:'issue'})).concat(receipts.map(x=>({...x,type:'receive'})))).filter(x=>isToday(movementDate(x))).length);
+  if(!visible.length){list.innerHTML='<div class="empty">لا توجد أصناف بكمية في المخزن.</div>'}else{
+    list.innerHTML=visible.slice(0,12).map(({p,s})=>productCard(p,s)).join('');
+  }
+  renderMoves($('dashboardMoves'),8);
+}
+function productCard(p,s){
+  const q=Number(s?.quantity||0),min=Number(p.min_stock||0),low=q<=min;
+  return `<div class="product ${low?'low':'ok'}"><div><div class="name">${esc(p.name)}</div><div class="meta">${esc(p.barcode||'بدون باركود')} · ${esc(p.unit||'وحدة')} · ${money(p.unit_price)}</div></div><div class="qty"><strong>${num(q)}</strong><small>${esc(p.unit||'وحدة')}</small></div></div>`;
+}
+function renderInventory(){
+  const q=($('inventorySearch')?.value||'').trim().toLowerCase();
+  const list=$('inventoryList');if(!list)return;
+  const arr=products.map(p=>({p,s:warehouseStock(p.id)})).filter(({p})=>!q||String(p.name||'').toLowerCase().includes(q)||String(p.barcode||'').includes(q));
+  if(!arr.length){list.innerHTML='<div class="empty">لا توجد نتائج.</div>';return}
+  list.innerHTML=arr.map(({p,s})=>{
+    const qv=Number(s?.quantity||0),min=Number(p.min_stock||0),low=qv<=min;
+    return `<div class="inventory-card ${low?'low':'ok'}">
+      <div class="product" style="border:0;padding:0;background:transparent">
+        <div><div class="name">${esc(p.name)}</div><div class="meta">${esc(p.barcode||'بدون باركود')} · ${esc(p.unit||'وحدة')} · ${money(p.unit_price)}</div></div>
+        <div class="qty"><strong>${num(qv)}</strong><small>${esc(p.unit||'وحدة')}</small></div>
+      </div>
+      <div class="product-actions">
+        <button class="edit-btn" onclick="openEditProduct('${p.id}')">✏️ تعديل</button>
+        <button class="disable-btn" onclick="disableProduct('${p.id}')">🗑️ تعطيل</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openEditProduct(id){
+  const p=productById(id);
+  if(!p)return;
+  $('editProductId').value=p.id;
+  $('editProductName').value=p.name||'';
+  $('editProductBarcode').value=p.barcode||'';
+  $('editProductUnit').value=p.unit||'حبة';
+  $('editProductCategory').value=p.category||'';
+  $('editProductPrice').value=Number(p.unit_price||0);
+  $('editProductMin').value=Number(p.min_stock||0);
+  $('editProductStatus').textContent='';
+  $('editProductModal').classList.add('show');
+}
+function closeEditProduct(){$('editProductModal').classList.remove('show');}
+
+async function saveEditProduct(){ if(!roleAllowed('edit')){toast('ليس لديك صلاحية تعديل الأصناف');return;}
+  const id=$('editProductId').value;
+  const name=$('editProductName').value.trim();
+  const barcode=$('editProductBarcode').value.trim().replace(/\D/g,'');
+  const unit=$('editProductUnit').value;
+  const category=$('editProductCategory').value.trim()||null;
+  const price=Number($('editProductPrice').value);
+  const minStock=Number($('editProductMin').value||0);
+  const status=$('editProductStatus');
+  if(!name||!barcode||barcode.length<8||barcode.length>14||price<0||minStock<0){status.textContent='❌ تأكد من الاسم والباركود والسعر والحد الأدنى.';return}
+  status.textContent='جاري حفظ التعديل…';
+  try{
+    await api('products?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{'Prefer':'return=representation','Content-Type':'application/json'},body:JSON.stringify({name,barcode,unit,category,unit_price:price,min_stock:minStock})});
+    closeEditProduct();toast('تم تعديل الصنف ✓');await loadAll();
+  }catch(e){status.textContent='❌ فشل التعديل: '+String(e?.message||e);}
+}
+
+async function disableProduct(id){ if(!roleAllowed('disable')){toast('ليس لديك صلاحية تعطيل الأصناف');return;}
+  const p=productById(id);
+  if(!p)return;
+  if(!confirm('تعطيل الصنف «'+p.name+'»؟\nلن يظهر في الصرف أو قائمة الأصناف، ولن نحذف سجل حركاته.'))return;
+  try{
+    await api('products?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{'Prefer':'return=minimal','Content-Type':'application/json'},body:JSON.stringify({active:false})});
+    toast('تم تعطيل الصنف ✓');await loadAll();
+  }catch(e){alert('فشل تعطيل الصنف: '+String(e?.message||e));}
+}
+function renderMoves(el,limit=50){
+  const source=movements.length ? movements : [
+    ...issues.map(x=>({...x,type:'issue'})),
+    ...receipts.map(x=>({...x,type:'receive'}))
+  ];
+  const all=source.sort((a,b)=>movementDate(b)-movementDate(a)).slice(0,limit);
+  if(!all.length){el.innerHTML='<div class="empty">لا توجد حركات بعد.</div>';return}
+  el.innerHTML=all.map(x=>{
+    const p=productById(movementProductId(x));
+    const issue=movementType(x)==='issue';
+    const title=issue?'خروج من المخزن':'دخول بضاعة';
+    const extra=movementReceiver(x);
+    const q=Math.abs(movementQty(x));
+    return `<div class="notice"><div class="notice-row"><div class="ni">${issue?'📤':'📥'}</div><div><b class="${issue?'red':'green'}">${title}: ${esc(p?.name||x.product_name||x.name||'صنف')}</b><small>${issue?'−':'+'}${num(q)} ${esc(p?.unit||x.unit||'وحدة')} · ${movementDate(x).toLocaleString('ar-IQ')} ${extra?'· '+esc(extra):''}</small></div></div></div>`;
+  }).join('');
+}
+
+function renderNotifications(){
+  const source=movements.length ? movements : [
+    ...issues.map(x=>({...x,type:'issue'})),
+    ...receipts.map(x=>({...x,type:'receive'}))
+  ];
+  const all=source.sort((a,b)=>movementDate(b)-movementDate(a)).slice(0,100);
+  const lowCount=products.filter(p=>{
+    const s=warehouseStock(p.id);
+    return s && Number(s.quantity||0)<=Number(p.min_stock||0);
+  }).length;
+  $('badge').textContent=num(Math.min(all.length+lowCount,99));
+  renderMoves($('notificationsList'),100);
+}
+
+function showScreen(id){
+  ['dashboard','inventory','issue','receive','report','notifications'].forEach(x=>$(x).classList.toggle('hidden',x!==id));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));
+  if(id==='dashboard')$('navDashboard').classList.add('active');
+  if(id==='issue')resetIssue();
+  if(id==='receive')resetReceive(false);
+  if(id==='inventory')renderInventory();
+  if(id==='report')loadSelectedReport();
+  if(id==='notifications')renderNotifications();
+  stopScanner();
+}
+
+let scanCanvas=null,scanCtx=null,scanTimer=null,scanBusy=false;
+const EAN_L={0:[3,2,1,1],1:[2,2,2,1],2:[2,1,2,2],3:[1,4,1,1],4:[1,1,3,2],5:[1,2,3,1],6:[1,1,1,4],7:[1,3,1,2],8:[1,2,1,3],9:[3,1,1,2]};
+const EAN_G={0:[1,1,2,3],1:[1,2,2,2],2:[2,2,1,2],3:[1,1,4,1],4:[2,3,1,1],5:[1,3,2,1],6:[4,1,1,1],7:[2,1,3,1],8:[3,1,2,1],9:[2,1,1,3]};
+const EAN_R={0:[3,2,1,1],1:[2,2,2,1],2:[2,1,2,2],3:[1,4,1,1],4:[1,1,3,2],5:[1,2,3,1],6:[1,1,1,4],7:[1,3,1,2],8:[1,2,1,3],9:[3,1,1,2]};
+const PARITY=['LLLLLL','LLGLGG','LLGGLG','LLGGGL','LGLLGG','LGGLLG','LGGGLL','LGLGLG','LGLGGL','LGGLGL'];
+function eanDigit(runs,patterns){
+  const sum=runs.reduce((a,b)=>a+b,0)||1, u=sum/7; let best=-1,err=1e9;
+  for(const [d,p] of Object.entries(patterns)){const e=p.reduce((a,x,i)=>a+Math.pow((runs[i]/u)-x,2),0);if(e<err){err=e;best=Number(d)}}
+  return err<2.8?best:-1;
+}
+function decodeEAN13Canvas(){
+  if(!scanCanvas||!scanCtx)return null; const w=scanCanvas.width,h=scanCanvas.height;
+  const ys=[Math.floor(h*.42),Math.floor(h*.46),Math.floor(h*.50),Math.floor(h*.54),Math.floor(h*.58)];
+  for(const y of ys){
+    const data=scanCtx.getImageData(0,y,w,1).data; let vals=new Uint8Array(w);
+    let sum=0;for(let x=0;x<w;x++){const i=x*4;vals[x]=(data[i]+data[i+1]+data[i+2])/3;sum+=vals[x]}
+    const mean=sum/w; let dark=0;for(let x=0;x<w;x++)if(vals[x]<mean*.72)dark++;
+    const threshold=Math.max(45,Math.min(190,mean-(mean*.18)));
+    let runs=[],state=vals[0]<threshold?1:0,start=0;
+    for(let x=1;x<w;x++){const s=vals[x]<threshold?1:0;if(s!==state){runs.push({c:state,n:x-start});start=x;state=s}}
+    runs.push({c:state,n:w-start});
+    for(let i=0;i<runs.length-2;i++){
+      if(runs[i].c!==1||runs[i+1].c!==0||runs[i+2].c!==1)continue;
+      const g=(runs[i].n+runs[i+1].n+runs[i+2].n)/3;if(g<1.2||g>25)continue;
+      let idx=i+3, left=[], ok=true;
+      for(let d=0;d<6;d++){const rr=runs.slice(idx,idx+4);if(rr.length<4||rr.some(r=>r.c!==((d*2)%2?0:1) && false)){ok=false;break}const n=eanDigit(rr.map(r=>r.n),{...EAN_L,...EAN_G});if(n<0){ok=false;break}left.push({d:n,par:'L'});idx+=4}
+      if(!ok)continue;
+      // Re-read left digits allowing either L or G and track parity.
+      idx=i+3;left=[];let parity='';
+      for(let d=0;d<6;d++){const rr=runs.slice(idx,idx+4);if(rr.length<4){ok=false;break}const a=eanDigit(rr.map(r=>r.n),EAN_L),b=eanDigit(rr.map(r=>r.n),EAN_G);
+        const choose=a>=0&&b>=0?(Math.min(...rr.map((r,k)=>0))>=0?a:b):(a>=0?a:b); if(a<0&&b<0){ok=false;break}
+        let el=1e9,eg=1e9;const total=rr.reduce((q,r)=>q+r.n,0)||1,u=total/7;
+        el=EAN_L[choose].reduce((q,x,k)=>q+Math.pow(rr[k].n/u-x,2),0);eg=EAN_G[choose].reduce((q,x,k)=>q+Math.pow(rr[k].n/u-x,2),0);
+        if(el<=eg){left.push(choose);parity+='L'}else{left.push(choose);parity+='G'} idx+=4;
+      }
+      if(!ok)continue;
+      const first=PARITY.indexOf(parity);if(first<0)continue;
+      // center guard: black/white/black/white/black
+      if(!(runs[idx]?.c===0||runs[idx]?.c===1))continue;
+      let centerIdx=idx; if(runs[centerIdx]?.c===1)centerIdx++;
+      if(runs[centerIdx]?.c!==0||runs[centerIdx+1]?.c!==1||runs[centerIdx+2]?.c!==0||runs[centerIdx+3]?.c!==1||runs[centerIdx+4]?.c!==0)continue;
+      idx=centerIdx+5;let right=[];
+      for(let d=0;d<6;d++){const rr=runs.slice(idx,idx+4);if(rr.length<4)break;const n=eanDigit(rr.map(r=>r.n),EAN_R);if(n<0){right=[];break}right.push(n);idx+=4}
+      if(right.length!==6)continue;
+      if(runs[idx]?.c!==1||runs[idx+1]?.c!==0||runs[idx+2]?.c!==1)continue;
+      const code=String(first)+left.join('')+right.join('');
+      if(code.length===13 && ean13Checksum(code.slice(0,12))===code[12])return code;
+    }
+  } return null;
+}
+async function startScanner(){
+  if(!supabaseKey){alert('اربط قاعدة البيانات أولاً');return}
+  if(!navigator.mediaDevices?.getUserMedia){$('scanError').textContent='المتصفح لا يسمح بالكاميرا. افتح الموقع عبر HTTPS.';return}
+  stopScanner(); $('scanError').textContent='جاري تشغيل الكاميرا…';
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
+    const v=$('video');v.srcObject=stream;v.style.display='block';await v.play();
+    if('BarcodeDetector' in window){
+      detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','itf']});
+      const loop=async()=>{if(!stream)return;try{const c=await detector.detect(v);if(c.length){await lookupBarcode(String(c[0].rawValue).trim());return}}catch(e){}requestAnimationFrame(loop)};loop();
+      $('scanError').textContent='وجه الكاميرا على الباركود…';
+    }else{
+      scanCanvas=document.createElement('canvas');scanCanvas.width=640;scanCanvas.height=360;scanCtx=scanCanvas.getContext('2d',{willReadFrequently:true});
+      $('scanError').textContent='وجه الكاميرا على باركود EAN-13 وانتظر ثانية…';
+      const loop=async()=>{if(!stream||scanBusy)return;scanBusy=true;try{scanCtx.drawImage(v,0,0,640,360);const code=decodeEAN13Canvas();if(code){await lookupBarcode(code);return}}catch(e){}scanBusy=false;scanTimer=setTimeout(loop,180)};loop();
+    }
+  }catch(e){
+    $('scanError').textContent='لم تشتغل الكاميرا. اضغط السماح للكاميرا من إعدادات Safari ثم جرّب مرة ثانية.';
+  }
+}
+function stopScanner(){
+  if(scanTimer){clearTimeout(scanTimer);scanTimer=null} scanBusy=false; scanCanvas=null; scanCtx=null;
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  if($('video')){$('video').srcObject=null;$('video').style.display='none'}
+  if(window.html5Scanner){window.html5Scanner.stop().catch(()=>{}).then(()=>{try{window.html5Scanner.clear()}catch(e){}});window.html5Scanner=null}
+  if($('html5qr'))$('html5qr').style.display='none';
+}
+function searchIssueProduct(){
+  const q=($('issueNameSearch')?.value||'').trim().toLowerCase();
+  const box=$('issueSearchResults');
+  if(!box)return;
+  if(!q){box.innerHTML='';return}
+  const arr=products.map(p=>({p,s:warehouseStock(p.id)}))
+    .filter(({p,s})=>s && Number(s.quantity)>0 && (String(p.name||'').toLowerCase().includes(q) || String(p.barcode||'').includes(q)))
+    .slice(0,12);
+  if(!arr.length){box.innerHTML='<div class="empty">ماكو صنف مطابق أو ماكو كمية بالمخزن.</div>';return}
+  box.innerHTML=arr.map(({p,s})=>`<button class="action" style="width:100%;text-align:right;margin-bottom:8px" onclick="selectIssueProduct('${p.id}')"><div><b>${esc(p.name)}</b><small>${esc(p.barcode||'بدون باركود')} · المتوفر ${num(s.quantity)} ${esc(p.unit||'وحدة')} · ${money(p.unit_price)}</small></div></button>`).join('');
+}
+async function selectIssueProduct(id){
+  const p=productById(id);
+  const s=warehouseStock(id);
+  if(!p||!s||Number(s.quantity)<=0){$('scanError').textContent='الصنف غير موجود أو لا توجد كمية في المخزن.';return}
+  product=p;stockRow=s;qty=1;
+  $('itemName').textContent=p.name;$('itemBarcode').textContent=p.barcode||'بدون باركود';
+  $('itemAvailable').textContent=num(s.quantity)+' '+(p.unit||'وحدة');$('itemPrice').textContent=money(p.unit_price);
+  renderIssueQty();$('scanView').classList.add('hidden');$('itemView').classList.remove('hidden');
+}
+
+function manualLookup(){
+  let code=$('manualBarcode').value.trim().replace(/\D/g,'');
+  if(!/^\d{8,14}$/.test(code)){$('scanError').textContent='أدخل باركود من 8 إلى 14 رقم.';return}
+  lookupBarcode(code)
+}
+async function lookupBarcode(code){
+  $('scanError').textContent='جاري البحث…';
+  try{
+    const found=await api('products?select=id,name,barcode,unit,active,unit_price,min_stock&barcode=eq.'+encodeURIComponent(code)+'&active=eq.true&limit=1');
+    if(!found.length)throw new Error('NOT_FOUND');
+    product=found[0];
+    stockRow=warehouseStock(product.id);
+    if(!stockRow)throw new Error('NO_STOCK');
+    qty=Math.min(1,Number(stockRow.quantity));
+    $('itemName').textContent=product.name;$('itemBarcode').textContent=product.barcode||code;
+    $('itemAvailable').textContent=num(stockRow.quantity)+' '+product.unit;
+    $('itemPrice').textContent=money(product.unit_price);
+    renderIssueQty();$('scanView').classList.add('hidden');$('itemView').classList.remove('hidden');stopScanner();
+  }catch(e){$('scanError').textContent='الصنف غير موجود أو لا توجد له كمية في المخزن.'}
+}
+function changeQty(n){
+  const max=Number(stockRow?.quantity||1);
+  qty=Math.max(1,Math.min(max,Number(qty||1)+n));
+  renderIssueQty();
+}
+function manualQtyChange(){
+  const max=Number(stockRow?.quantity||1);
+  let value=parseInt($('qty').value,10);
+  if(!Number.isFinite(value)) return;
+  qty=Math.max(1,Math.min(max,value));
+  renderIssueQty();
+}
+function renderIssueQty(){
+  const input=$('qty');
+  if(input) input.value=String(qty);
+  $('remaining').textContent=num(Math.max(0,Number(stockRow?.quantity||0)-qty))+' '+(product?.unit||'وحدة');
+}
+async function confirmIssue(){ if(!roleAllowed('issue')){toast('ليس لديك صلاحية الصرف');return;}
+  const receiver=$('receiver').value.trim();
+  if(!receiver){alert('اكتب اسم المستلم أو القسم');return}
+  if(!product||!stockRow){alert('حدد الصنف أولاً');return}
+  if(qty<=0||qty>Number(stockRow.quantity)){alert('الكمية غير صحيحة');return}
+
+  const btn=document.querySelector('#itemView .primary');
+  if(btn){btn.disabled=true;btn.textContent='جاري تسجيل الصرف…';}
+
+  try{
+    const payload={
+      p_warehouse_id:stockRow.warehouse_id,
+      p_product_id:product.id,
+      p_quantity:Number(qty),
+      p_received_by_name:receiver,
+      p_reason:$('reason').value||null
+    };
+
+    const r=await fetch(supabaseUrl+'/rest/v1/rpc/issue_stock',{
+      method:'POST',
+      headers:{
+        ...headers(),
+        'Content-Type':'application/json',
+        'Accept':'application/json'
+      },
+      body:JSON.stringify(payload)
+    });
+
+    const text=await r.text();
+    let data=null;
+    try{data=text?JSON.parse(text):null}catch{}
+
+    if(!r.ok){
+      const msg=(data&&data.message)||text||('HTTP '+r.status);
+      console.error('issue_stock failed:',r.status,msg,payload);
+      throw new Error(msg);
+    }
+
+    console.log('issue_stock success:',data);
+
+    await sendMovementTelegram('stock_issues',{
+      warehouse_id:stockRow.warehouse_id,
+      product_id:product.id,
+      quantity:Number(qty),
+      received_by_name:receiver,
+      reason:$('reason').value||null,
+      note:null,
+      unit_price_snapshot:Number(product.unit_price||0),
+      created_at:new Date().toISOString()
+    });
+
+    const previousQuantity=Number(stockRow.quantity);
+    const remaining=previousQuantity-Number(qty);
+    const minStock=Number(product.min_stock||0);
+
+    // أرسل تنبيه فقط عند عبور الحد لأول مرة، وليس مع كل عملية صرف.
+    if(previousQuantity>0 && remaining<=0){
+      await sendLowStockTelegram(product,remaining,selectedWarehouse,'OUT_OF_STOCK');
+    }else if(previousQuantity>minStock && remaining<=minStock){
+      await sendLowStockTelegram(product,remaining,selectedWarehouse,'LOW_STOCK');
+    }
+
+    $('itemView').classList.add('hidden');
+    $('successView').classList.remove('hidden');
+
+    $('doneName').textContent=product.name;
+    $('doneQty').textContent=num(qty)+' '+product.unit;
+    $('doneTotal').textContent=money(Number(qty)*Number(product.unit_price||0));
+    $('doneRemaining').textContent=num(remaining)+' '+product.unit;
+    $('doneReceiver').textContent=receiver;
+    $('doneTime').textContent=new Date().toLocaleString('ar-IQ');
+
+    toast('تم تسجيل خروج البضاعة ✓');
+    await loadAll();
+
+  }catch(e){
+    console.error('confirmIssue error:',e);
+    alert('فشل تسجيل الصرف:\n\n'+String(e?.message||e));
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✓ تأكيد الصرف';}
+  }
+}
+function resetIssue(){stopScanner();$('scanView').classList.remove('hidden');$('itemView').classList.add('hidden');$('successView').classList.add('hidden');$('scanError').textContent='';if($('manualBarcode'))$('manualBarcode').value='';if($('issueNameSearch'))$('issueNameSearch').value='';if($('issueSearchResults'))$('issueSearchResults').innerHTML='';product=null;stockRow=null;qty=1}
+
+function ean13Checksum(first12){
+  const d=String(first12).replace(/\D/g,'').slice(0,12).padStart(12,'0');
+  let sum=0;for(let i=0;i<12;i++)sum+=Number(d[i])*(i%2===0?1:3);
+  return String((10-(sum%10))%10);
+}
+function generateEAN13(){
+  let base='20';while(base.length<12)base+=Math.floor(Math.random()*10);
+  base=base.slice(0,12);return base+ean13Checksum(base);
+}
+function renderBarcodeInto(elId,code){
+  const el=$(elId);if(!el)return;
+  if(!code){el.innerHTML='<div class="muted">سيظهر الباركود هنا تلقائياً</div>';return}
+  const clean=String(code).replace(/\D/g,'');
+  el.innerHTML='<svg id="barcodeSvg_'+elId+'"></svg><div class="barcode-number">'+esc(clean)+'</div>';
+  try{
+    JsBarcode('#barcodeSvg_'+elId,clean,{format:clean.length===13?'ean13':'CODE128',lineColor:'#111',background:'#fff',width:2,height:90,displayValue:false,margin:6});
+  }catch(e){el.innerHTML='<div class="error">تعذر إنشاء صورة الباركود لهذا الرقم.</div>'}
+}
+function previewReceiveBarcode(){
+  const code=$('receiveBarcode').value.trim().replace(/\D/g,'');
+  if(code)renderBarcodeInto('receiveBarcodePreview',code);else $('receiveBarcodePreview').innerHTML='<div class="muted">سيتم توليد باركود تلقائياً عند الحفظ</div>';
+}
+function generateReceiveBarcode(){
+  const code=generateEAN13();$('receiveBarcode').value=code;renderBarcodeInto('receiveBarcodePreview',code);toast('تم توليد باركود جديد ✓');
+}
+async function saveReceipt(){ if(!roleAllowed('receive')){toast('ليس لديك صلاحية الاستلام');return;}
+  const name=$('receiveName').value.trim();let barcode=$('receiveBarcode').value.trim().replace(/\D/g,'');
+  const unit=$('receiveUnit').value,category=$('receiveCategory').value.trim()||null,quantity=Number($('receiveQty').value),price=Number($('receivePrice').value),minStock=Number($('receiveMin').value||0),note=$('receiveNote').value.trim()||null;
+  if(!name||quantity<=0||price<0){$('receiveStatus').textContent='أكمل اسم الصنف والكمية والسعر.';return}
+  if(!barcode)barcode=generateEAN13();
+  if(barcode.length<8||barcode.length>14){$('receiveStatus').textContent='الباركود يجب أن يكون من 8 إلى 14 رقم.';return}
+  $('receiveBarcode').value=barcode;renderBarcodeInto('receiveBarcodePreview',barcode);$('receiveStatus').textContent='جاري الحفظ…';
+  try{
+    const existing=await api('products?select=id,name,barcode,unit,category,min_stock,unit_price,active&barcode=eq.'+encodeURIComponent(barcode)+'&limit=1');
+    let prod;
+    if(existing.length){
+      const upd=await api('products?id=eq.'+existing[0].id,{method:'PATCH',headers:{'Prefer':'return=representation','Content-Type':'application/json'},body:JSON.stringify({name,unit,category,min_stock:minStock,unit_price:price,active:true})});
+      prod=upd[0];
+    }else{
+      const ins=await api('products',{method:'POST',headers:{'Prefer':'return=representation','Content-Type':'application/json'},body:JSON.stringify({name,barcode,unit,category,min_stock:minStock,unit_price:price,active:true})});
+      prod=ins[0];
+    }
+    if(!selectedWarehouse)await loadWarehouses();
+    if(!selectedWarehouse)throw new Error('NO_WAREHOUSE');
+    // تحديث المخزون مباشرة من الواجهة لضمان عدم بقاء الكمية = 0.
+    // نقرأ سجل المخزون الحالي ثم نزيد عليه الكمية المستلمة.
+    const current=await api('stock?select=id,warehouse_id,product_id,quantity&warehouse_id=eq.'+encodeURIComponent(selectedWarehouse.id)+'&product_id=eq.'+encodeURIComponent(prod.id)+'&limit=1');
+    if(current.length){
+      const newQty=Number(current[0].quantity||0)+quantity;
+      await api('stock?id=eq.'+encodeURIComponent(current[0].id),{method:'PATCH',headers:{'Prefer':'return=representation','Content-Type':'application/json'},body:JSON.stringify({quantity:newQty,updated_at:new Date().toISOString()})});
+    }else{
+      await api('stock',{method:'POST',headers:{'Prefer':'return=representation','Content-Type':'application/json'},body:JSON.stringify({warehouse_id:selectedWarehouse.id,product_id:prod.id,quantity:quantity})});
+    }
+    // تسجيل حركة الدخول يجب أن ينجح فعلياً قبل إظهار رسالة النجاح.
+    // بعدها نرسل إشعار Telegram كخطوة مستقلة حتى لا تختفي أخطاء الإشعار داخل عملية الحفظ.
+    let receiptWarning='';
+    const receiptPayload={
+      warehouse_id:selectedWarehouse.id,
+      product_id:prod.id,
+      quantity:quantity,
+      note:note,
+      unit_price_snapshot:price
+    };
+
+    const savedReceipt=await api('stock_receipts',{
+      method:'POST',
+      headers:{'Prefer':'return=representation','Content-Type':'application/json'},
+      body:JSON.stringify(receiptPayload)
+    });
+    if(!Array.isArray(savedReceipt) || !savedReceipt.length){
+      throw new Error('تعذر تسجيل حركة الدخول في سجل العمليات. لم يتم اعتماد العملية.');
+    }
+
+    // إشعار Telegram مستقل عن الحفظ. إذا فشل الإرسال تبقى العملية محفوظة
+    // ويظهر للمستخدم تنبيه واضح بدلاً من اعتبارها ناجحة بالكامل.
+    const telegramSent=await sendMovementTelegram('stock_receipts',{
+      ...receiptPayload,
+      created_at:savedReceipt[0]?.created_at||new Date().toISOString(),
+      product_name:name,
+      unit:unit,
+      warehouse_name:selectedWarehouse.name||'المخزن'
+    });
+    if(!telegramSent){
+      receiptWarning=' تم حفظ العملية، لكن لم يتم إرسال إشعار Telegram. تحقق من إعدادات الإشعارات.';
+    }
+    $('receiveSuccess').classList.remove('hidden');document.querySelector('#receive>.card').classList.add('hidden');
+    $('receivedSummary').textContent=name+' — '+barcode;$('receivedQty').textContent=num(quantity)+' '+unit;$('receivedPrice').textContent=money(price);$('receivedTotal').textContent=money(quantity*price);$('receiveStatus').textContent=receiptWarning;
+    renderBarcodeInto('receivedBarcodePreview',barcode);toast('تم حفظ دخول البضاعة والكمية ✓');await loadAll();
+  }catch(e){
+    console.error('saveReceipt failed:',e);
+    const msg=String(e?.message||e||'خطأ غير معروف');
+    $('receiveStatus').textContent='فشل حفظ الكمية في المخزون: '+msg;
+  }
+}
+function printReceivedBarcode(){
+  const code=$('receiveBarcode').value.trim();if(!code)return;
+  const svg=$('receivedBarcodePreview').innerHTML;
+  const w=window.open('','_blank');if(!w){alert('اسمح بفتح النافذة للطباعة');return}
+  w.document.write('<html dir="rtl"><head><title>باركود '+code+'</title><style>body{font-family:Arial;text-align:center;padding:30px}svg{max-width:100%;height:auto}.barcode-number{font-size:18px;font-weight:bold;letter-spacing:2px;margin-top:8px}</style></head><body>'+svg+'</body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),300);
+}
+function downloadReceivedBarcode(){
+  const svg=$('receivedBarcodePreview').querySelector('svg');if(!svg){alert('لا يوجد باركود');return}
+  const data=new XMLSerializer().serializeToString(svg);const blob=new Blob([data],{type:'image/svg+xml;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='barcode-'+$('receiveBarcode').value+'.svg';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function resetReceive(clear=true){
+  $('receiveSuccess').classList.add('hidden');document.querySelector('#receive>.card').classList.remove('hidden');$('receiveStatus').textContent='';
+  if(clear){['receiveName','receiveBarcode','receiveCategory','receiveQty','receivePrice','receiveNote'].forEach(id=>$(id).value='');$('receiveMin').value='0';$('receiveUnit').value='حبة';previewReceiveBarcode()}
+}
+
+function pad2(n){return String(n).padStart(2,'0')}
+function toLocalInputValue(d){
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+function fromLocalInputValue(v){
+  if(!v)return null;
+  const d=new Date(v);
+  return Number.isNaN(d.getTime())?null:d;
+}
+function getReportRange(period){
+  const now=new Date();
+  let from=new Date(now),to=new Date(now);
+  if(period==='today'){
+    from.setHours(0,0,0,0);to.setHours(23,59,59,999);
+  }else if(period==='month'){
+    from=new Date(now.getFullYear(),now.getMonth(),1,0,0,0,0);
+    to=new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59,999);
+  }else{
+    const day=now.getDay(),diffToSat=(day+1)%7;
+    from=new Date(now);from.setDate(now.getDate()-diffToSat);from.setHours(0,0,0,0);
+    to=new Date(now);to.setHours(23,59,59,999);
+  }
+  return {from,to};
+}
+function loadSelectedReport(){ if(!roleAllowed('report'))return;
+  const period=$('reportPeriod')?.value||'today';
+  const {from,to}=getReportRange(period);
+  const labels={today:'تقرير اليوم',week:'تقرير الأسبوع',month:'تقرير الشهر'};
+  $('reportTitle').textContent=labels[period];
+  $('reportFrom').textContent=from.toLocaleDateString('ar-IQ');
+  $('reportTo').textContent=to.toLocaleDateString('ar-IQ');
+
+  const periodIssues=issues.filter(x=>{const d=new Date(x.created_at);return d>=from&&d<=to});
+  const periodReceipts=receipts.filter(x=>{const d=new Date(x.created_at);return d>=from&&d<=to});
+
+  const issueQty=periodIssues.reduce((a,x)=>a+Number(x.quantity||0),0);
+  const issueValue=periodIssues.reduce((a,x)=>a+Number(x.quantity||0)*Number(x.unit_price_snapshot||productById(x.product_id)?.unit_price||0),0);
+  const receiveQty=periodReceipts.reduce((a,x)=>a+Number(x.quantity||0),0);
+  const receiveValue=periodReceipts.reduce((a,x)=>a+Number(x.quantity||0)*Number(productById(x.product_id)?.unit_price||0),0);
+
+  $('reportIssueValue').textContent=money(issueValue);
+  $('reportIssueQty').textContent=num(issueQty);
+  $('reportIssueCount').textContent=num(periodIssues.length);
+  $('reportReceiveQty').textContent=num(receiveQty);
+  $('reportReceiveValue').textContent=money(receiveValue);
+
+  const el=$('reportIssues');
+  if(!periodIssues.length){el.innerHTML='<div class="empty">ماكو عمليات صرف ضمن الفترة المحددة.</div>';return}
+  el.innerHTML=periodIssues.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(x=>{
+    const p=productById(x.product_id);
+    const value=Number(x.quantity||0)*Number(x.unit_price_snapshot||p?.unit_price||0);
+    return `<div class="notice"><div class="notice-row"><div class="ni">📤</div><div><b class="red">${esc(p?.name||'صنف')}</b><small>الكمية: ${num(x.quantity)} ${esc(p?.unit||'وحدة')} · المبلغ: ${money(value)} · ${new Date(x.created_at).toLocaleString('ar-IQ')} · ${esc(x.received_by_name||'')}</small></div></div></div>`;
+  }).join('');
+}
+function loadWeeklyReport(){
+  if($('reportPeriod'))$('reportPeriod').value='week';
+  loadSelectedReport();
+}
+initAuth().then(ok=>{if(ok)loadConfig();});
+
+/* ===== Backup V1 ===== */
+function openBackup(){ if(!roleAllowed('backup')){toast('ليس لديك صلاحية النسخ الاحتياطي');return;}
+  const m=document.getElementById('backupModal');
+  if(m)m.classList.add('open');
+  const s=document.getElementById('backupStatus');
+  if(s)s.textContent='';
+}
+function closeBackup(){
+  const m=document.getElementById('backupModal');
+  if(m)m.classList.remove('open');
+}
+function backupStamp(){
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}`;
+}
+function downloadBackup(data){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`SumerRest_Backup_${backupStamp()}.json`;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function createBackup(){
+  const status=document.getElementById('backupStatus');
+  try{
+    if(!supabaseUrl||!supabaseKey)throw new Error('قاعدة البيانات غير متصلة');
+    if(status)status.textContent='جاري تجهيز النسخة الاحتياطية…';
+
+    const backup={
+      backup_version:1,
+      created_at:new Date().toISOString(),
+      source:'Sumer Rest Inventory',
+      data:{
+        products:await api('products?select=*&limit=10000'),
+        warehouses:await api('warehouses?select=*&limit=10000'),
+        stock:await api('stock?select=*&limit=10000'),
+        stock_receipts:await api('stock_receipts?select=*&limit=10000'),
+        stock_issues:await api('stock_issues?select=*&limit=10000')
+      }
+    };
+    downloadBackup(backup);
+    if(status)status.textContent='✅ تم إنشاء النسخة وحفظها على جهازك.';
+    if(typeof toast==='function')toast('تم إنشاء النسخة الاحتياطية ✓');
+  }catch(e){
+    console.error('backup failed:',e);
+    if(status)status.textContent='❌ تعذر إنشاء النسخة: '+String(e.message||e);
+  }
+}
+
+</script>
+
+<!-- Backup V1: manual export, independent from stock operations -->
+<div id="backupModal" class="modal">
+  <div class="sheet" dir="rtl">
+    <button class="close" onclick="closeBackup()">إغلاق</button>
+    <h2>💾 النسخ الاحتياطي</h2>
+    <p class="muted">إنشاء نسخة من بيانات المخزن الحالية وحفظها على جهازك.</p>
+    <button class="primary" onclick="createBackup()">⬇️ إنشاء نسخة احتياطية</button>
+    <div id="backupStatus" class="backup-note"></div>
+  </div>
+</div>
+
+</body>
+</html>
