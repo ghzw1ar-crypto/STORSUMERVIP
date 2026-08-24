@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الجرد الفعلي — Sumer Rest</title>
+<style>
+body{margin:0;background:#101214;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.app{max-width:520px;margin:auto;padding:18px}.card,.item{background:#181b20;border:1px solid #30343b;border-radius:20px;padding:16px;margin:12px 0}
+h1{font-size:25px}.muted{color:#a7abb2;font-size:13px;line-height:1.7}
+label{display:block;color:#aaa;font-size:12px;margin:10px 0 6px}
+select,input{width:100%;box-sizing:border-box;background:#111418;color:#fff;border:1px solid #30343b;border-radius:12px;padding:13px;font-size:16px}
+button{width:100%;border:0;border-radius:13px;padding:14px;margin-top:10px;font-weight:800;font-size:16px;background:#f28b42;color:#111}
+.small{color:#aaa;font-size:11px;margin-top:5px}.row{display:flex;justify-content:space-between;gap:10px}
+.name{font-weight:800;font-size:17px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.box{background:#101317;border:1px solid #30343b;border-radius:11px;padding:9px}
+.box b{display:block;margin-top:5px}.diff{margin-top:8px;border-radius:9px;padding:8px;font-size:12px;font-weight:800}
+.same{background:#0d291b;color:#6ee79a}.up{background:#30250e;color:#ffd66b}.down{background:#341818;color:#ff9999}
+.status{padding:12px;border-radius:13px;background:#1d2025;margin:10px 0}.error{color:#ff8585}.success{color:#6ee79a}.warning{color:#ffd66b}
+.hidden{display:none}.sticky{position:sticky;bottom:8px;background:#101214ee;border:1px solid #30343b;border-radius:16px;padding:10px}
+</style>
+</head>
+<body>
+<main class="app">
+<h1>📋 الجرد الفعلي</h1>
+<div class="card">
+<p class="muted">نسخة اختبار آمنة: تقرأ الكمية الحالية وتسمح بإدخال الكمية الفعلية وحساب الفرق فقط. لا يتم تعديل المخزن أو قاعدة البيانات من هذه الصفحة.</p>
+<label>المخزن</label><select id="warehouse"></select>
+<label>بحث</label><input id="search" placeholder="اسم الصنف أو الباركود" oninput="render()">
+</div>
+<div id="status" class="status">جاري التحميل…</div>
+<div id="list"></div>
+<div class="sticky">
+<button onclick="preview()">🔎 معاينة التسوية</button>
+<button style="background:#292c31;color:#fff" onclick="counts={};render()">مسح إدخالات الجرد</button>
+</div>
+<div id="preview" class="card hidden"></div>
+</main>
+<script>
+const URL=localStorage.getItem('sumer_supabase_url')||'';
+const KEY=localStorage.getItem('sumer_supabase_key')||'';
+let warehouses=[],products=[],stock=[],counts={};
+const $=x=>document.getElementById(x);
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+async function api(path){
+ const r=await fetch(URL+'/rest/v1/'+path,{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});
+ const t=await r.text();let d;try{d=JSON.parse(t)}catch{d=t}
+ if(!r.ok)throw Error(typeof d==='string'?d:JSON.stringify(d));return d;
+}
+function wh(){return $('warehouse').value}
+function row(p){return stock.find(s=>String(s.product_id)===String(p.id)&&String(s.warehouse_id)===String(wh()))}
+function diff(p){if(!(p.id in counts))return null;return Number(counts[p.id])-Number(row(p)?.quantity||0)}
+function render(){
+ let q=$('search').value.trim().toLowerCase();
+ let arr=products.filter(p=>!q||String(p.name).toLowerCase().includes(q)||String(p.barcode||'').includes(q));
+ $('list').innerHTML=arr.map(p=>{
+  let sys=Number(row(p)?.quantity||0),a=p.id in counts?counts[p.id]:'',x=diff(p);
+  let cl=x===null?'same':x===0?'same':x>0?'up':'down';
+  let txt=x===null?'لم تدخل الكمية':x===0?'مطابق ✓':x>0?'زيادة '+x:'نقص '+Math.abs(x);
+  return `<div class="item"><div class="row"><div><div class="name">${esc(p.name)}</div><div class="small">${esc(p.barcode||'بدون باركود')} · ${esc(p.unit||'وحدة')}</div></div><div class="box">المسجل<b>${sys}</b></div></div><div class="grid"><div class="box">الفعلي<input type="number" min="0" value="${a}" oninput="setc('${p.id}',this.value)"></div><div class="box">الفرق<div class="diff ${cl}">${txt}</div></div></div></div>`;
+ }).join('')||'<div class="status">لا توجد أصناف مطابقة.</div>';
+}
+function setc(id,v){if(v==='')delete counts[id];else if(Number(v)>=0)counts[id]=Number(v);render()}
+function preview(){
+ let r=products.map(p=>({p,x:diff(p),sys:Number(row(p)?.quantity||0),act:counts[p.id]})).filter(x=>x.x!==null&&x.x!==0);
+ $('preview').classList.remove('hidden');
+ $('preview').innerHTML=r.length?'<b>🔎 معاينة التسوية</b><p class="muted">لم يتم تعديل المخزن بعد.</p>'+r.map(x=>`<div class="status"><b>${esc(x.p.name)}</b><br>المسجل: ${x.sys} · الفعلي: ${x.act} · الفرق: <b class="${x.x>0?'warning':'error'}">${x.x>0?'+':''}${x.x}</b></div>`).join(''):'<b class="success">✓ كل الكميات المدخلة مطابقة.</b><p class="muted">لم يتم تعديل أي بيانات.</p>';
+}
+async function init(){
+ if(!URL||!KEY){$('status').innerHTML='<span class="error">قاعدة البيانات غير مربوطة. افتح الموقع الأساسي أولاً.</span>';return}
+ try{
+  warehouses=await api('warehouses?select=id,name&limit=100');
+  products=await api('products?select=id,name,barcode,unit,active&active=eq.true&limit=1000');
+  stock=await api('stock?select=warehouse_id,product_id,quantity&limit=5000');
+  $('warehouse').innerHTML=warehouses.map(w=>`<option value="${esc(w.id)}">${esc(w.name)}</option>`).join('');
+  $('warehouse').onchange=()=>{counts={};render()};
+  $('status').innerHTML='<span class="success">✓ تم تحميل البيانات. لا يوجد أي تعديل على المخزون.</span>';
+  render();
+ }catch(e){$('status').innerHTML='<span class="error">خطأ: '+esc(e.message)+'</span>'}
+}
+init();
+</script>
+</body>
+</html>
