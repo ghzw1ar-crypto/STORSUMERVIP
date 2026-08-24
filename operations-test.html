@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📋 سجل العمليات — Sumer Rest</title>
+<style>
+:root{--bg:#101214;--panel:#17191d;--line:#2c3037;--text:#f5f5f5;--muted:#9da2aa;--orange:#f28b42;--green:#27c96f;--red:#ff5d5d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+main{max-width:620px;margin:auto;padding:16px 14px 90px}.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}.back{color:#fff;text-decoration:none;font-size:30px}.title{font-size:22px;font-weight:900}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin:10px 0}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}.filters input,.filters select{width:100%;background:#111417;color:#fff;border:1px solid var(--line);border-radius:12px;padding:11px}
+button{width:100%;border:0;border-radius:12px;padding:12px;background:var(--orange);font-weight:900;margin-top:9px}.secondary{background:#25292e;color:#fff;border:1px solid var(--line)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{text-align:center;background:#111417;border:1px solid var(--line);border-radius:13px;padding:10px}.stat b{display:block;font-size:20px}.stat small{color:var(--muted)}
+.item{border:1px solid var(--line);border-radius:15px;padding:12px;margin:8px 0;background:#1a1c20}.head{display:flex;justify-content:space-between;gap:8px}.name{font-weight:900}.type{font-weight:900}.issue{color:var(--red)}.receipt{color:var(--green)}.meta{color:var(--muted);font-size:11px;line-height:1.8;margin-top:7px}.empty{text-align:center;color:var(--muted);padding:28px}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a class="back" href="index.html">‹</a><div class="title">📋 سجل العمليات</div></div>
+
+<div class="card">
+<div class="filters">
+<input id="search" placeholder="بحث بالصنف..." oninput="render()">
+<select id="type" onchange="render()"><option value="">كل الحركات</option><option value="issue">📤 صرف</option><option value="receipt">📥 استلام</option></select>
+</div>
+<button class="secondary" onclick="load()">↻ تحديث السجل</button>
+<div id="status" class="meta"></div>
+</div>
+
+<div id="summary" class="summary"></div>
+<div id="list" class="card"></div>
+
+<script>
+let rows=[];
+const $=id=>document.getElementById(id);
+function cfg(){
+ const url=localStorage.getItem('sumer_supabase_url');
+ const key=localStorage.getItem('sumer_supabase_key');
+ if(!url||!key) throw new Error('بيانات Supabase غير موجودة على هذا الجهاز. افتح التطبيق واتصل بقاعدة البيانات أولاً.');
+ return {url:url.replace(/\/$/,''),key};
+}
+function headers(){const {key}=cfg();return {'apikey':key,'Authorization':'Bearer '+key};}
+function iraqTime(v){try{return new Intl.DateTimeFormat('ar-IQ',{timeZone:'Asia/Baghdad',dateStyle:'medium',timeStyle:'medium'}).format(new Date(v))}catch{return v||'—'}}
+async function load(){
+ try{
+  $('status').textContent='جاري تحميل سجل العمليات...';
+  const {url}=cfg();
+  const r=await fetch(url+'/rest/v1/stock_movements?select=*&order=created_at.desc&limit=500',{headers:headers()});
+  if(!r.ok) throw new Error('تعذر تحميل السجل: HTTP '+r.status);
+  rows=await r.json();
+  const p=await fetch(url+'/rest/v1/products?select=id,name,barcode',{headers:headers()});
+  if(p.ok){const products=await p.json(); const map=new Map(products.map(x=>[x.id,x])); rows=rows.map(x=>({...x,product:map.get(x.product_id)}));}
+  $('status').textContent='تم تحميل '+rows.length+' عملية';
+  render();
+ }catch(e){$('status').textContent=e.message||String(e);$('list').innerHTML='<div class="empty">⚠️ '+$('status').textContent+'</div>'}
+}
+function render(){
+ const q=$('search').value.trim().toLowerCase(), t=$('type').value;
+ const filtered=rows.filter(x=>{
+  const name=(x.product?.name||'').toLowerCase();
+  const barcode=x.product?.barcode||'';
+  const okQ=!q||name.includes(q)||barcode.includes(q);
+  const mt=(x.movement_type||'').toLowerCase();
+  const okT=!t||(t==='issue'&&(mt.includes('issue')||mt.includes('out')||mt.includes('صرف'))||(t==='receipt'&&(mt.includes('receipt')||mt.includes('in')||mt.includes('استلام'))));
+  return okQ&&okT;
+ });
+ const issues=filtered.filter(x=>/issue|out|صرف/i.test(x.movement_type||'')).length;
+ const receipts=filtered.filter(x=>/receipt|in|استلام/i.test(x.movement_type||'')).length;
+ $('summary').innerHTML='<div class="stat"><b>'+filtered.length+'</b><small>كل العمليات</small></div><div class="stat"><b>'+issues+'</b><small>صرف</small></div><div class="stat"><b>'+receipts+'</b><small>استلام</small></div>';
+ if(!filtered.length){$('list').innerHTML='<div class="empty">لا توجد عمليات مطابقة.</div>';return}
+ $('list').innerHTML=filtered.map(x=>{
+  const issue=/issue|out|صرف/i.test(x.movement_type||'');
+  const person=x.received_by_name||x.issued_by||x.received_by||'—';
+  return '<div class="item"><div class="head"><div class="name">'+esc(x.product?.name||'صنف غير معروف')+'</div><div class="type '+(issue?'issue':'receipt')+'">'+(issue?'📤 صرف':'📥 استلام')+'</div></div>'+
+  '<div class="meta">الكمية: <b>'+esc(String(x.quantity??'—'))+'</b> '+esc(x.product?.unit||'')+'<br>السعر: '+esc(String(x.unit_price??'—'))+' د.ع<br>الشخص: '+esc(String(person))+'<br>السبب: '+esc(String(x.reason||'—'))+'<br>الملاحظة: '+esc(String(x.note||'—'))+'<br>الوقت: '+esc(iraqTime(x.created_at))+'</div></div>'
+ }).join('');
+}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+load();
+</script>
+</main>
+</body>
+</html>
