@@ -1249,9 +1249,34 @@ async function saveReceipt(){ if(!roleAllowed('receive')){toast('ليس لديك
 }
 function printReceivedBarcode(){
   const code=$('receiveBarcode').value.trim();if(!code)return;
-  const svg=$('receivedBarcodePreview').innerHTML;
-  const w=window.open('','_blank');if(!w){alert('اسمح بفتح النافذة للطباعة');return}
-  w.document.write('<html dir="rtl"><head><title>باركود '+code+'</title><style>body{font-family:Arial;text-align:center;padding:30px}svg{max-width:100%;height:auto}.barcode-number{font-size:18px;font-weight:bold;letter-spacing:2px;margin-top:8px}</style></head><body>'+svg+'</body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),300);
+  const svg=$('receivedBarcodePreview').querySelector('svg');
+  if(!svg){alert('لا يوجد باركود للطباعة');return}
+  const name=($('receiveName')?.value||'').trim()||'الصنف';
+  const svgData=new XMLSerializer().serializeToString(svg);
+  const w=window.open('','_blank');
+  if(!w){alert('اسمح بفتح النافذة للطباعة');return}
+  w.document.write(`<!doctype html>
+<html dir="rtl"><head><meta charset="utf-8"><title>${esc(name)}</title>
+<style>
+@page{size:50mm 30mm;margin:0}
+*{box-sizing:border-box}
+html,body{width:50mm;height:30mm;margin:0;padding:0}
+body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;background:#fff}
+.label{width:50mm;height:30mm;padding:2mm 2.5mm;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.name{font-size:11pt;font-weight:700;line-height:1.1;max-width:45mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1.5mm}
+.barcode{width:44mm;display:flex;justify-content:center}
+.barcode svg{width:44mm;height:14mm;max-width:44mm}
+.number{font-size:8pt;font-weight:700;letter-spacing:1px;margin-top:1mm;direction:ltr}
+@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head>
+<body><div class="label">
+<div class="name">${esc(name)}</div>
+<div class="barcode">${svgData}</div>
+<div class="number">${esc(code)}</div>
+</div></body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),300);
 }
 function downloadReceivedBarcode(){
   const svg=$('receivedBarcodePreview').querySelector('svg');if(!svg){alert('لا يوجد باركود');return}
